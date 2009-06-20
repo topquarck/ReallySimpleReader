@@ -2,10 +2,11 @@
 #define REALLYSIMPLEREADER_H
 
 #include <QObject>
-class DBManager;
+//class DBManager;
 class XmlParser;
 class HttpDownloader;
-class RSRMainWindow;
+class Qlist;
+class Item;
 /**
   the Main/Central class of the whole App
   all other classes(UI,db,XML,Http) are children of it
@@ -15,16 +16,24 @@ class ReallySimpleReader : public QObject
 {
     Q_OBJECT
 public:
-    ReallySimpleReader();
-    /*virtual ~ReallySimpleReader();
-    void StartUp();
-    void LoadLocalData();*/
-private:/*
-    DBManager*          m_pDBManger;
+    ReallySimpleReader(QObject *parent);
+    virtual ~ReallySimpleReader();
+    //void StartUp();
+    //void LoadLocalData();
+    void GetFeeds();
+    void SetURL(QString );
+    QList<Item*> GetItemsList();
+public slots:
+    void StartParsing();
+    void StartViewing();
+
+signals:
+    void Finished();
+private:
+    //DBManager*          m_pDBManger;
     XmlParser*          m_pXmlParser;
     HttpDownloader*     m_pHttpDownloader;
-    RSRMainWindow*      m_pMainWindow;
-    */
+    QString             m_url;
 };
 
 #endif // REALLYSIMPLEREADER_H

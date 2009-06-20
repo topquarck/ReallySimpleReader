@@ -16,8 +16,8 @@ class QUrl;
 class HttpDownloader : public QObject //public QThread
 {
     Q_OBJECT
-protected:
-    void run();
+//protected:
+    //void run();
 
 public:
     HttpDownloader(QObject*);
@@ -25,22 +25,23 @@ public:
     virtual ~HttpDownloader();
     const QByteArray GetData();
     void DownloadURL();
-    //just for testing
-    //void StartIt(){DownloadURL();}
-    //end just for testing
 
 public slots:
     void Done(bool);
 
 signals:
-    void RSSDownloadFinished();
-    void RSSDownloadError(QString);
+    void SignalDownloadProgress(int,int);
+    void SignalDownloadError(QString);
+    void SignalFinished();
 
 private:
-
+    void AddQhttpSignals();
     bool OpenOutputBuffer();
     void CleanUp();
 
+private slots:
+    void ViewProgressMessage(int done, int total);
+    void ViewErrorMessge(QString error);
 private: // variables
     QBuffer*    m_pBuffer;  // the file buffer
     QHttp*      m_pHttp;    // the QHttp fetcher

@@ -19,4 +19,5 @@ public:
 public slots:
     void DownloadFinished();
     void ShowParserError(QString);
+    void doShowData();
 };

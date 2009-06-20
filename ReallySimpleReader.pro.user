@@ -57,12 +57,12 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-EQMrqRt4Rm,guid=09bae7e926a2ee6a4ed993204a2928ab</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-tFjUpmWJBT,guid=081347796da7ef550e2a34a74a3ca703</value>
     <value type="QString" >DESKTOP_SESSION=kde</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
     <value type="QString" >DM_CONTROL=/var/run/xdmctl</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-4K1Fzn/S.gpg-agent:2174:1</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-H9Jvxf/S.gpg-agent:2179:1</value>
     <value type="QString" >GS_LIB=</value>
     <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/ibrahim/.gtkrc-2.0:/home/ibrahim/.gtkrc-2.0-kde4:/home/ibrahim/.kde/share/config/gtkrc-2.0</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/ibrahim/.gtkrc::/home/ibrahim/.kde/share/config/gtkrc</value>
@@ -86,18 +86,18 @@
     <value type="QString" >QTDIR=/usr</value>
     <value type="QString" >QT_PLUGIN_PATH=/home/ibrahim/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/:/home/ibrahim/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
     <value type="QString" >SAL_GTK_USE_PIXMAPPAINT=1</value>
-    <value type="QString" >SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/2221,unix/unix:/tmp/.ICE-unix/2221</value>
+    <value type="QString" >SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/2226,unix/unix:/tmp/.ICE-unix/2226</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=2</value>
-    <value type="QString" >SSH_AGENT_PID=2125</value>
+    <value type="QString" >SSH_AGENT_PID=2116</value>
     <value type="QString" >SSH_ASKPASS=/usr/bin/ksshaskpass</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-TtuiwL2099/agent.2099</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-yseFfD2089/agent.2089</value>
     <value type="QString" >USER=ibrahim</value>
     <value type="QString" >WINDOWPATH=1</value>
     <value type="QString" >XCURSOR_THEME=default</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share/kde-settings/kde-profile/default/share:/usr/local/share:/usr/share</value>
     <value type="QString" >XDG_MENU_PREFIX=kde4-</value>
-    <value type="QString" >XDG_SESSION_COOKIE=f3292a1ad1462e332594f1f6492fc8f0-1244211370.345402-77863824</value>
+    <value type="QString" >XDG_SESSION_COOKIE=f3292a1ad1462e332594f1f6492fc8f0-1245488898.828924-563214899</value>
     <value type="QString" >XDM_MANAGED=method=classic</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
@@ -118,12 +118,12 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-EQMrqRt4Rm,guid=09bae7e926a2ee6a4ed993204a2928ab</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-tFjUpmWJBT,guid=081347796da7ef550e2a34a74a3ca703</value>
     <value type="QString" >DESKTOP_SESSION=kde</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
     <value type="QString" >DM_CONTROL=/var/run/xdmctl</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-4K1Fzn/S.gpg-agent:2174:1</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-H9Jvxf/S.gpg-agent:2179:1</value>
     <value type="QString" >GS_LIB=</value>
     <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/ibrahim/.gtkrc-2.0:/home/ibrahim/.gtkrc-2.0-kde4:/home/ibrahim/.kde/share/config/gtkrc-2.0</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/ibrahim/.gtkrc::/home/ibrahim/.kde/share/config/gtkrc</value>
@@ -147,18 +147,18 @@
     <value type="QString" >QTDIR=/usr</value>
     <value type="QString" >QT_PLUGIN_PATH=/home/ibrahim/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/:/home/ibrahim/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
     <value type="QString" >SAL_GTK_USE_PIXMAPPAINT=1</value>
-    <value type="QString" >SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/2221,unix/unix:/tmp/.ICE-unix/2221</value>
+    <value type="QString" >SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/2226,unix/unix:/tmp/.ICE-unix/2226</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=2</value>
-    <value type="QString" >SSH_AGENT_PID=2125</value>
+    <value type="QString" >SSH_AGENT_PID=2116</value>
     <value type="QString" >SSH_ASKPASS=/usr/bin/ksshaskpass</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-TtuiwL2099/agent.2099</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-yseFfD2089/agent.2089</value>
     <value type="QString" >USER=ibrahim</value>
     <value type="QString" >WINDOWPATH=1</value>
     <value type="QString" >XCURSOR_THEME=default</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share/kde-settings/kde-profile/default/share:/usr/local/share:/usr/share</value>
     <value type="QString" >XDG_MENU_PREFIX=kde4-</value>
-    <value type="QString" >XDG_SESSION_COOKIE=f3292a1ad1462e332594f1f6492fc8f0-1244211370.345402-77863824</value>
+    <value type="QString" >XDG_SESSION_COOKIE=f3292a1ad1462e332594f1f6492fc8f0-1245488898.828924-563214899</value>
     <value type="QString" >XDM_MANAGED=method=classic</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
@@ -174,12 +174,12 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-EQMrqRt4Rm,guid=09bae7e926a2ee6a4ed993204a2928ab</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-tFjUpmWJBT,guid=081347796da7ef550e2a34a74a3ca703</value>
     <value type="QString" >DESKTOP_SESSION=kde</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
     <value type="QString" >DM_CONTROL=/var/run/xdmctl</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-4K1Fzn/S.gpg-agent:2174:1</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-H9Jvxf/S.gpg-agent:2179:1</value>
     <value type="QString" >GS_LIB=</value>
     <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/ibrahim/.gtkrc-2.0:/home/ibrahim/.gtkrc-2.0-kde4:/home/ibrahim/.kde/share/config/gtkrc-2.0</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/ibrahim/.gtkrc::/home/ibrahim/.kde/share/config/gtkrc</value>
@@ -203,18 +203,18 @@
     <value type="QString" >QTDIR=/usr</value>
     <value type="QString" >QT_PLUGIN_PATH=/home/ibrahim/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/:/home/ibrahim/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
     <value type="QString" >SAL_GTK_USE_PIXMAPPAINT=1</value>
-    <value type="QString" >SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/2221,unix/unix:/tmp/.ICE-unix/2221</value>
+    <value type="QString" >SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/2226,unix/unix:/tmp/.ICE-unix/2226</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=2</value>
-    <value type="QString" >SSH_AGENT_PID=2125</value>
+    <value type="QString" >SSH_AGENT_PID=2116</value>
     <value type="QString" >SSH_ASKPASS=/usr/bin/ksshaskpass</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-TtuiwL2099/agent.2099</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-yseFfD2089/agent.2089</value>
     <value type="QString" >USER=ibrahim</value>
     <value type="QString" >WINDOWPATH=1</value>
     <value type="QString" >XCURSOR_THEME=default</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share/kde-settings/kde-profile/default/share:/usr/local/share:/usr/share</value>
     <value type="QString" >XDG_MENU_PREFIX=kde4-</value>
-    <value type="QString" >XDG_SESSION_COOKIE=f3292a1ad1462e332594f1f6492fc8f0-1244211370.345402-77863824</value>
+    <value type="QString" >XDG_SESSION_COOKIE=f3292a1ad1462e332594f1f6492fc8f0-1245488898.828924-563214899</value>
     <value type="QString" >XDM_MANAGED=method=classic</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >

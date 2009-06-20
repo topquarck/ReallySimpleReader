@@ -45,10 +45,10 @@ void HttpDownloader::CleanUp()
     }
 } //end destructor
 
-void HttpDownloader::run()
+/*void HttpDownloader::run()
 {
     DownloadURL();
-}
+}*/
 /**
   this fn is the one that actually fetch the RSS file from the internet
   */
@@ -58,9 +58,7 @@ void HttpDownloader::DownloadURL()
         //lazily-loading/initializing the QHttp
         m_pHttp = new QHttp(this);
         //the following statement is VERY IMPORTANT
-        connect(m_pHttp, SIGNAL(done(bool)),
-                this, SLOT(Done(bool)));
-
+        this->AddQhttpSignals();
         m_pHttp->setHost(m_pUrl->host(), m_pUrl->port(80));
         m_pHttp->get(m_pUrl->path(), m_pBuffer);
         m_pHttp->close();
@@ -69,7 +67,16 @@ void HttpDownloader::DownloadURL()
         //TODO: handle the error
     }
 }
-
+void HttpDownloader::AddQhttpSignals()
+{
+    connect(m_pHttp, SIGNAL(done(bool)),
+                this, SLOT(Done(bool)));
+        //connect for progress and state change
+        connect(m_pHttp,SIGNAL(dataReadProgress(int,int)),
+                this,SLOT(ViewProgressMessage(int,int)) );
+        connect(this,SIGNAL(SignalDownloadError(QString)),
+                this,SLOT(ViewErrorMessage(QString) ) );
+}
 /**
   opens and makes the buffer ready for writing
   */
@@ -99,16 +106,17 @@ bool HttpDownloader::OpenOutputBuffer()
   the slot that is called when downloading the RSS file is DONE
   */
 void HttpDownloader::Done(bool error) {
+    qDebug("in Done slot, HttpDownloader");
     if (error) {
+        std::cout << "Error: "<<m_pHttp->errorString().toStdString()<<endl;
         //handle Error Messages
-        emit RSSDownloadError(m_pHttp->errorString());
-        //cerr << "Error: " << qPrintable(m_pHttp->errorString()) << endl;
+        emit SignalDownloadError(m_pHttp->errorString());
         return;
     } else {
         //view a Success message
-        std::cout << "File downloaded as " << endl;
+        std::cout << "File downloaded as " <<m_pUrl->toString().toStdString()<< endl;
     }
-    emit RSSDownloadFinished();
+    emit SignalFinished();
 }
 /**
   this fn returns the CONTENTS of the Buffer to the consumer
@@ -126,8 +134,22 @@ const QByteArray HttpDownloader::GetData()
     //
     return m_pBuffer->data();
 }
+void HttpDownloader::ViewProgressMessage(int done, int total)
+{
+    /*if (! m_pMainWindow)
+        m_pMainWindow = new  IStatusBarViewer();
+    int result = (done/total)*100;
+    m_pMainWindow->ShowStatusBarMessage(result);*/
+    qDebug("%d out of %d downloaded",done,total);
 
-
+}
+void HttpDownloader::ViewErrorMessge(QString error)
+{
+    /*if (! m_pMainWindow)
+        m_pMainWindow = new  IStatusBarViewer();
+    m_pMainWindow->ShowStatusBarMessage(error);*/
+    std::cout<<"Doenload ERROR: "<<error.toStdString()<<endl;
+}
 
 
 

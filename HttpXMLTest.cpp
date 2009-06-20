@@ -39,10 +39,17 @@ void HttpXMLTest::TestParse()
 {
     std::cout<<"********* in TestPArse() **********"<<endl;
     parser = new XmlParser(this);
+    connect(parser,SIGNAL(ParseDone()),
+        this,SLOT(doShowData()) );
     connect(parser,SIGNAL(ParseErrorSignal(QString)),
             this,SLOT(ShowParserError(QString)),Qt::DirectConnection);
-    parser->SetData(downloader->GetData());
-    ShowData(parser->ParseXML());
+
+}
+void HttpXMLTest::doShowData()
+{
+    std::cout<<"***** in doShowData SLOT ***"<<endl;
+   parser->SetData(downloader->GetData());
+   ShowData(parser->GetChannel());
 }
 void HttpXMLTest::ShowParserError(QString errorMsg)
 {

@@ -4,10 +4,10 @@
 QT += network \
     sql \
     webkit \
-    xml \
-    testlib
+    xml
 TARGET = ReallySimpleReader
-CONFIG += qtestlib
+
+# CONFIG += qtestlib
 TEMPLATE = app
 SOURCES += rsrmainwindow.cpp \
     item.cpp \
@@ -16,10 +16,9 @@ SOURCES += rsrmainwindow.cpp \
     dbmanager.cpp \
     httpdownloader.cpp \
     xmlparser.cpp \
-    HttpDownloaderTest.cpp \
-    HttpXMLTest.cpp \
     dbconnector.cpp \
-    dbconnectortest.cpp
+    main.cpp \
+    feedmodel.cpp
 HEADERS += rsrmainwindow.h \
     item.h \
     channel.h \
@@ -27,9 +26,7 @@ HEADERS += rsrmainwindow.h \
     dbmanager.h \
     httpdownloader.h \
     xmlparser.h \
-    HttpDownloaderTest.h \
-    HttpXMLTest.h \
     dbconnector.h \
-    dbconnectortest.h
+    feedmodel.h
 FORMS += rsrmainwindow.ui
 OTHER_FILES += README.txt

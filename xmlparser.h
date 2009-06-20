@@ -2,6 +2,7 @@
 #define XMLPARSER_H
 
 #include <QObject>
+#include <QThread>
 class QDomDocument;
 class QDomElement;
 class QByteArray;
@@ -11,19 +12,22 @@ class Item;
 /**
   the class reponsible for parsing the RSS feeds
   */
-class XmlParser : public QObject
+class XmlParser : public QThread
 {
     Q_OBJECT
 
+protected:
+    void run();
 public:
     XmlParser(QObject* parent);
     virtual ~XmlParser();
     Channel& GetChannel();
-    Channel& ParseXML();
+    void ParseXML();
     void SetData(const QByteArray&);
 
 signals:
     void ParseErrorSignal(QString);
+    void ParseDone();
 
 private:  //methods
     void CleanUp();

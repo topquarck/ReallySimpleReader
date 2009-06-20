@@ -4,7 +4,7 @@
 #include <QByteArray>
 #include "channel.h"
 #include "item.h"
-XmlParser::XmlParser(QObject* parent) : QObject(parent)
+XmlParser::XmlParser(QObject* parent) : QThread(parent)
 {
     //init all pointer vars to NULL;
     m_pDoc = NULL;
@@ -63,13 +63,14 @@ void XmlParser::SetData(const QByteArray& dataArray)
   it calls all internal/private parsing methods that do the xML processing
   and returns the xml data in a form of Channel onject containing all parsed data
   */
-Channel& XmlParser::ParseXML()
+void XmlParser::ParseXML()
 {
     if (OpenBuffer()){
         if (ParseRssHead()){
 
             if (ParseChannel()){
-                return *m_pChannel;
+                //return *m_pChannel;
+                emit ParseDone();
             }//end if ParseChannel
             else{  // channel tag is not valid and can't be parsed
                 //report an error
@@ -225,7 +226,10 @@ Item* XmlParser::ParseItem(QDomElement givenElement){
     return tempItem;
 }
 
-
+void XmlParser::run()
+{
+    this->ParseXML();
+}
 
 
 

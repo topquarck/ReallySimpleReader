@@ -15,7 +15,7 @@ class DBManager : public QObject
 public:
     DBManager();
     virtual ~DBManager();
-    voig GetTags();
+    void GetTags();
     void GetAllData();
     void GetUnread();
     void GetRecent();

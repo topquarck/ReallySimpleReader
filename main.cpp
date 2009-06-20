@@ -1,31 +1,16 @@
 #include <QtGui/QApplication>
-//#include "rsrmainwindow.h"
+#include "rsrmainwindow.h"
 
-//testing the HttpDownloader class
-//#include "HttpDownloaderTest.h"
-//#include "HttpXMLTest.h"
-//end testing
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    //RSRMainWindow w;
-    //w.show();
-/*
-    HttpXMLTest tester;
-    tester.Init();
-    tester.TestDownload();
-    //tester.TestParse();
-*/
+    RSRMainWindow w;
+    QObject::connect(&w,SIGNAL(destroyed()),&a,SLOT(quit()) );
+    w.show();
     return a.exec();
 }
 
 
- //testing the HttpDownloader class
-/*    HttpDownloadTest tester;
-    tester.CreateInstance();
-    tester.testDownload();
-    */
-    //
 
 
 
