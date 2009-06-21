@@ -216,11 +216,18 @@ Item* XmlParser::ParseItem(QDomElement givenElement){
             tempItem->setTitle(e.text());
         }else if (e.tagName().toLower()=="link"){
             tempItem->setLink(e.text());
-        }else if (e.tagName().toLower() =="description"){
+        }
+        //commented fro now, this info is no longer needed, replaced by pubDate and auther
+        /*else if (e.tagName().toLower() =="description"){
             tempItem->setDesc(e.text());
+        }*/
+        else if (e.tagName().toLower() == "author"){
+            tempItem->setAuther(e.text());
         }
         //else, we will discard the rest of the tags for now
-      }
+      }else if (e.tagName().toLower() == QString("pubDate").toLower()){
+          tempItem->setPubDate(e.text());
+      }//end added
       node= node.nextSibling();
     }//end while
     return tempItem;

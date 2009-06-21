@@ -33,7 +33,7 @@ int FeedModel::rowCount(const QModelIndex &parent) const
 }
 int FeedModel::columnCount(const QModelIndex &parent) const
 {
-    return 2;
+    return 4;
 }
 QVariant FeedModel::data(const QModelIndex &index, int role) const
 {
@@ -52,6 +52,11 @@ QVariant FeedModel::data(const QModelIndex &index, int role) const
              case 1:
              var = m_itemsList.at(index.row())->getLink();
              break;
+             case 2:
+             var = m_itemsList.at(index.row())->getAuther();
+             break;
+             case 3:
+             var = m_itemsList.at(index.row())->getPubDate();
              default:
              var= "sdsd";
          }
@@ -75,6 +80,12 @@ QVariant FeedModel::headerData(int section, Qt::Orientation orientation,int role
          return QString("%1").arg(section);
 }
 */
-
-
-
+//testing onlt
+int FeedModel::GetSize()
+{
+    return m_itemsList.size();
+}
+QString FeedModel::GetLink(int row)
+{
+    return m_itemsList.at(row)->getLink();
+}
