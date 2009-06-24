@@ -8,7 +8,6 @@ class QDomElement;
 class QByteArray;
 class Channel;
 class Item;
-
 /**
   the class reponsible for parsing the RSS feeds
   */
@@ -20,14 +19,16 @@ protected:
     void run();
 public:
     XmlParser(QObject* parent);
+    //
+    XmlParser(QString ,QObject* parent);
     virtual ~XmlParser();
     Channel& GetChannel();
     void ParseXML();
     void SetData(const QByteArray&);
 
 signals:
-    void ParseErrorSignal(QString);
-    void ParseDone();
+    void SignalParseError(QString);
+    void SignalParseDone();
 
 private:  //methods
     void CleanUp();
@@ -35,6 +36,7 @@ private:  //methods
     Item* ParseItem(QDomElement);
     bool ParseRssHead();
     bool ParseChannel();
+
 
 private: //variables
     QDomDocument*   m_pDoc;

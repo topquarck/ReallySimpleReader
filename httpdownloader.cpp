@@ -4,6 +4,9 @@
 #include <QHttp>
 #include <QFileInfo>
 #include <iostream>
+#include "xmlparser.h"
+//
+
 using namespace std;
 int HttpDownloader::m_globalfileCounter = 0;
 HttpDownloader::HttpDownloader(QObject *parent):QObject(parent)//QThread(parent)
@@ -11,6 +14,9 @@ HttpDownloader::HttpDownloader(QObject *parent):QObject(parent)//QThread(parent)
     m_pBuffer = NULL;
     m_pHttp = NULL;
     m_pUrl = NULL;
+    //
+    m_pParser = NULL;
+    m_pChannel = NULL;
 }
 HttpDownloader::HttpDownloader(QString givenFilename,QObject *parent):QObject(parent) //QThread(parent)
 {
@@ -18,10 +24,16 @@ HttpDownloader::HttpDownloader(QString givenFilename,QObject *parent):QObject(pa
     m_pHttp = NULL;
     m_pUrl = NULL;
     m_strfileName = givenFilename;
+    //
+    m_pParser = NULL;
+    m_pChannel = NULL;
 }
+
 HttpDownloader::~HttpDownloader()
 {
+    qDebug("in the HttpDowner's destructor");
     CleanUp();
+    qDebug("leaving HttpDowner's destructor");
 }
 /**
   clean out all the pointers
@@ -43,12 +55,16 @@ void HttpDownloader::CleanUp()
         delete m_pBuffer;
         m_pBuffer = NULL;
     }
-} //end destructor
+    if (m_pParser){
+        delete m_pParser;
+        m_pParser = NULL;
+    }
+    /*if (m_pChannel){
+        delete m_pChannel;
+        m_pChannel = NULL;
+    }*/
+}
 
-/*void HttpDownloader::run()
-{
-    DownloadURL();
-}*/
 /**
   this fn is the one that actually fetch the RSS file from the internet
   */
@@ -67,6 +83,11 @@ void HttpDownloader::DownloadURL()
         //TODO: handle the error
     }
 }
+void HttpDownloader::DownloadURL(QString ur)
+{
+    m_strfileName = ur;
+    this->DownloadURL();
+}
 void HttpDownloader::AddQhttpSignals()
 {
     connect(m_pHttp, SIGNAL(done(bool)),
@@ -75,7 +96,7 @@ void HttpDownloader::AddQhttpSignals()
         connect(m_pHttp,SIGNAL(dataReadProgress(int,int)),
                 this,SLOT(ViewProgressMessage(int,int)) );
         connect(this,SIGNAL(SignalDownloadError(QString)),
-                this,SLOT(ViewErrorMessage(QString) ) );
+                this,SLOT(ViewErrorMessge(QString) ) );
 }
 /**
   opens and makes the buffer ready for writing
@@ -107,16 +128,58 @@ bool HttpDownloader::OpenOutputBuffer()
   */
 void HttpDownloader::Done(bool error) {
     qDebug("in Done slot, HttpDownloader");
+
     if (error) {
         std::cout << "Error: "<<m_pHttp->errorString().toStdString()<<endl;
         //handle Error Messages
         emit SignalDownloadError(m_pHttp->errorString());
         return;
-    } else {
+    }
+    else {
         //view a Success message
         std::cout << "File downloaded as " <<m_pUrl->toString().toStdString()<< endl;
+        // the code to parse the XML file
+        if (m_pParser)
+            delete m_pParser;
+        m_pParser = new XmlParser(this);
+        this->AddParserSignals();
+        m_pParser->SetData(this->GetData());
+        //delete m_pBuffer;
+        m_pParser->start();
     }
-    emit SignalFinished();
+    //emit SignalFinished();
+}
+void HttpDownloader::AddParserSignals()
+{
+    connect(m_pParser,SIGNAL(SignalParseDone()),
+            this,SLOT(HandleParseDone()) );
+    connect(m_pParser,SIGNAL(SignalParseError(QString) ),
+            this,SLOT(HandleParseError(QString)) );
+}
+
+void HttpDownloader::HandleParseDone()
+{
+    qDebug("inside handleParsDone, Donwloader");
+    if (m_pChannel){
+        delete m_pChannel;
+    }
+    m_pChannel = &m_pParser->GetChannel();
+    qDebug("***");
+    if (!m_pChannel){
+        emit SignalDownloadError("damn it");
+        return;
+        }
+
+    emit SignalDownloadDone();
+}
+void HttpDownloader::HandleParseError(QString error)
+{
+    std::cout<<error.toStdString()<<endl;
+    emit SignalDownloadError(error);
+}
+Channel& HttpDownloader::GetChannel()
+{
+    return *m_pChannel;
 }
 /**
   this fn returns the CONTENTS of the Buffer to the consumer
@@ -126,7 +189,7 @@ void HttpDownloader::Done(bool error) {
       in case the buffer was destroyed anywhere in the application,
       it shouldn't affect other parties that use it.
   */
-const QByteArray HttpDownloader::GetData()
+const QByteArray& HttpDownloader::GetData()
 {
     //seek the buffer to the beginning
     m_pBuffer->seek(0);
@@ -148,7 +211,7 @@ void HttpDownloader::ViewErrorMessge(QString error)
     /*if (! m_pMainWindow)
         m_pMainWindow = new  IStatusBarViewer();
     m_pMainWindow->ShowStatusBarMessage(error);*/
-    std::cout<<"Doenload ERROR: "<<error.toStdString()<<endl;
+    std::cout<<"Download ERROR: "<<error.toStdString()<<endl;
 }
 
 

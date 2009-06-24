@@ -4,6 +4,8 @@
 #include <QByteArray>
 #include "channel.h"
 #include "item.h"
+//
+#include "httpdownloader.h"
 XmlParser::XmlParser(QObject* parent) : QThread(parent)
 {
     //init all pointer vars to NULL;
@@ -14,8 +16,11 @@ XmlParser::XmlParser(QObject* parent) : QThread(parent)
 }
 XmlParser::~XmlParser()
 {
+    qDebug("in xmlParsers destructor");
     CleanUp();
+    qDebug("just leaving xmlParsers destructor");
 }
+
 void XmlParser::CleanUp()
 {
     if (m_pChannel){
@@ -37,7 +42,6 @@ void XmlParser::CleanUp()
         //delete m_pData;
         //m_pData = NULL;
     }
-
 }
 /**
   this method returns the Actual parsed channel data - including itemList inside it-
@@ -45,18 +49,25 @@ void XmlParser::CleanUp()
   */
 Channel& XmlParser::GetChannel()
 {
+    qDebug("in gethchannle, parser: size of chanels items %d",
+           m_pChannel->getItems().size());
     return *m_pChannel;
 }
 
 void XmlParser::SetData(const QByteArray& dataArray)
 {
-    if (! m_pData) // if m_pData is NULL. not created yet
-        m_pData = new QByteArray(dataArray);
-    else{ // if buffer already exists, delete it and reallocate it
-        delete m_pData ;
-        m_pData = new QByteArray(dataArray);
+    //just for checking, defensive coding,
+    if (dataArray.isNull() || dataArray.isEmpty()){
+        qDebug("in DetData, parser: the sent data from the downloader is either null or empty");
+        emit SignalParseError("the sent data from the downloader is either null or empty");
+        return;
     }
+    if ( m_pData)
+        delete m_pData;
 
+    m_pData = new QByteArray(dataArray);
+    qDebug("the size of the buffer in the xmpLaprser's set data is %d",
+           m_pData->size());
 }
 /**
   this fn is the only public method used by the outsiders to DO ALL THE PARSING
@@ -70,11 +81,20 @@ void XmlParser::ParseXML()
 
             if (ParseChannel()){
                 //return *m_pChannel;
-                emit ParseDone();
+                {
+                    // it hink here we need to delete the dom classes to clean up mem
+                    //m_pRootElement->clear();
+                    delete m_pRootElement;
+                    m_pRootElement = NULL;
+                    //m_pDoc->clear();
+                    delete m_pDoc;
+                    m_pDoc = NULL;
+                }
+                emit SignalParseDone();
             }//end if ParseChannel
             else{  // channel tag is not valid and can't be parsed
                 //report an error
-                emit ParseErrorSignal(QString("ERROR: Couldn't Parse Channel tag!"));
+                emit SignalParseError(QString("ERROR: Couldn't Parse Channel tag!"));
                 //return NULL;
             }//end else ParseChannel
 
@@ -82,14 +102,14 @@ void XmlParser::ParseXML()
         else{
             //the input file IS NOT A VALID RSS FILE
             //report an error
-            emit ParseErrorSignal(QString("ERROR: Invalid RssFile! Couldn't FIND <rss> tag!"));
+            emit SignalParseError(QString("ERROR: Invalid RssFile! Couldn't FIND <rss> tag!"));
             //return NULL;
         }//end else ParseRssHead
 
     }//end if buffer was opened
     else{ // failed to open the Buffer for data
         //report error
-        emit ParseErrorSignal(QString("ERROR: Couldn't Open Buffer for opening"));
+        emit SignalParseError(QString("ERROR: Couldn't Open Buffer for opening"));
     }//end else
 
     //return NULL;
@@ -106,7 +126,7 @@ bool XmlParser::OpenBuffer()
     //if the Buffer contents not loaded to mem
     if( !m_pDoc->setContent( *m_pData) ){
         //reportError
-        emit ParseErrorSignal(QString("ERROR: Couldn't load the data into DOM"));
+        emit SignalParseError(QString("ERROR: Couldn't load the data into DOM"));
       return false;
     }
     //else: file contents loaded
@@ -146,10 +166,9 @@ bool XmlParser::ParseChannel()
             // we found RSS tag as root, ans its first child is channel tag
 
             //just for checking
-            if (m_pChannel){
+            if (m_pChannel)
                 delete m_pChannel;
-                m_pChannel = NULL;
-            }
+
             m_pChannel = new Channel();
             QDomNode node = tempElement.firstChild();
             QDomElement e;
@@ -168,7 +187,9 @@ bool XmlParser::ParseChannel()
 
                 //else if the tag is item, will call getitem
                 else if (e.tagName().toLower() == "item"){
-                    m_pChannel->addItem(ParseItem(e));
+                    Item* tempItem = ParseItem(e);
+                    m_pChannel->addItem(*tempItem);
+                    delete tempItem;
                 }
 
                 //else, we will discard the rest of the tags for now
@@ -181,13 +202,13 @@ bool XmlParser::ParseChannel()
         }//end if tag name of first child is channel
         else{   // the first child of RSS root is NOT channel
             //report error
-            emit ParseErrorSignal(QString("ERROR: Root's first child is not <channel> tag"));
+            emit SignalParseError(QString("ERROR: Root's first child is not <channel> tag"));
             return false;
         }
     }//end if first child is not null
     else{ // the first child of the root is NULL,
         //report error
-        emit ParseErrorSignal(QString("ERROR: couldn't retreive children of RSS"));
+        emit SignalParseError(QString("ERROR: couldn't retreive children of RSS"));
         return false;
     }//end else
 }
@@ -199,7 +220,6 @@ bool XmlParser::ParseChannel()
       faulty, So, if failed to parse the element, will return a NULL Object NOT error
   */
 Item* XmlParser::ParseItem(QDomElement givenElement){
-    //Item* tempITem = NULL;
     QDomNode node = givenElement.firstChild();
     //if first child id NULL, return immediately
     if (node.isNull()){
@@ -235,6 +255,7 @@ Item* XmlParser::ParseItem(QDomElement givenElement){
 
 void XmlParser::run()
 {
+    qDebug("in Run method of the xmparser");
     this->ParseXML();
 }
 

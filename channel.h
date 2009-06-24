@@ -5,11 +5,12 @@
 class Channel
 {
     QString title,link,desc,lang;
-    QList<Item*> itemsList;
+    QList<Item> itemsList;
 public:
     Channel();
+    Channel(const Channel&);
     virtual ~Channel();
-    void addItem(Item* givenItem);
+    void addItem(Item givenItem);
     void setTitle(QString);
     void setLink(QString);
     void setDesc(QString);
@@ -18,7 +19,8 @@ public:
     QString getLink();
     QString getDesc();
     QString getLang();
-    QList<Item*> getItems(){return this->itemsList;}
+    QList<Item> getItems(){return itemsList;}
+    int getSize();
 
 };
 

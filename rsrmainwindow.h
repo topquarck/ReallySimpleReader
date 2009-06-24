@@ -9,6 +9,7 @@ class ReallySimpleReader;
 class FeedModel ;
 //class QModelIndex;
 #include <QModelIndex>
+class ChannelListModel;
 namespace Ui
 {
     class RSRMainWindow;
@@ -26,19 +27,23 @@ public slots:
 
 private slots:
     void HandleDownLoadFinished();
-    //testing
-    void HandleViewSelection(QModelIndex index);
+    void HandleItemsViewSelection(QModelIndex index);
+    //the following slots for the viewing of the channel names in the left listview
+    void HandleFetchedCahnnels();
+    void HandleChannelsViewSelection(QModelIndex);
+
 private:    //methods
     void CreateToolBar();
     void AddModelsSignals();
     void RestoreDefaultWindowState();
 
 private:
-    Ui::RSRMainWindow *ui;
-    QAction* m_pGetFeedsAction;
-    ReallySimpleReader* m_pReader;
-    //testing
-    FeedModel* m_pFeedModel;
+    Ui::RSRMainWindow*      ui;
+    QAction*                m_pGetFeedsAction;
+    ReallySimpleReader*     m_pReader;
+
+    FeedModel*              m_pFeedModel;
+    ChannelListModel*       m_pChannelsModel;
 
 };
 

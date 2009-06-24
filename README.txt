@@ -18,3 +18,16 @@ A New proposal : create a sub-central
                         |                   |
                     XmlParser(Dom)          |
                                         DBConnector(db)
+****************
+A New proposal : change in the design: create a nee class
+            to handle the file saving < saving the feed url in files>
+            and put the downloader under the parser
+
+                ReallySimpleReader <------ RSRMainWindow(UI)
+                  |     |         |
+                  |     |         |
+             FeedStore  |
+                    HttpDownloader(Http)
+                        |
+                        |
+                     XmlParser(Dom)

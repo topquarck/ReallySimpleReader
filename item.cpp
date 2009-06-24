@@ -2,6 +2,7 @@
 
 Item::Item()
 {
+    qDebug("in item's destructor, nothing to erase!");
 }
 /*Item::Item(QString givenTitle,QString givenLink,QString givenDesc)
 {

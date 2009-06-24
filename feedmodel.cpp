@@ -7,7 +7,9 @@ FeedModel::FeedModel()
     this->SetHeaders();
 }
 FeedModel::~FeedModel()
-{}
+{
+    m_itemsList.clear();
+}
 
 void FeedModel::SetHeaders()
 {
@@ -42,31 +44,34 @@ QVariant FeedModel::data(const QModelIndex &index, int role) const
 
      if (index.row() >= m_itemsList.size())
          return QVariant();
-    switch (role){
-         default:
+
          QVariant var;
+         Item& it = const_cast<Item&>(m_itemsList.at(index.row())) ;
          switch (index.column()){
-             case 0:
-             var =  m_itemsList.at(index.row())->getTitle();
+             case 0:            
+             //var =  m_itemsList.at(index.row()).getTitle();
+            var = it.getTitle();
              break;
              case 1:
-             var = m_itemsList.at(index.row())->getLink();
+             //var = m_itemsList.at(index.row()).getLink();
+             var = it.getLink();
              break;
              case 2:
-             var = m_itemsList.at(index.row())->getAuther();
+             //var = m_itemsList.at(index.row()).getAuther();
+             var = it.getAuther();
              break;
              case 3:
-             var = m_itemsList.at(index.row())->getPubDate();
+             //var = m_itemsList.at(index.row()).getPubDate();
+             var = it.getPubDate();
              default:
-             var= "sdsd";
+             var= "";
          }
          return var;
-     }
 }
 
-void FeedModel::setItemsList(QList<Item*> lista)
+void FeedModel::setItemsList(QList<Item> lista)
 {
-    this->m_itemsList = lista;
+    m_itemsList = lista;
 }
 /*
 QVariant FeedModel::headerData(int section, Qt::Orientation orientation,int role) const
@@ -80,12 +85,11 @@ QVariant FeedModel::headerData(int section, Qt::Orientation orientation,int role
          return QString("%1").arg(section);
 }
 */
-//testing onlt
-int FeedModel::GetSize()
-{
-    return m_itemsList.size();
-}
+
 QString FeedModel::GetLink(int row)
 {
-    return m_itemsList.at(row)->getLink();
+    qDebug("in feedModel's GetLink");
+    //return m_itemsList.at(row).getLink();
+    Item& it = const_cast<Item&>(m_itemsList.at(row)) ;
+    return it.getLink();
 }

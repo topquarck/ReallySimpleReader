@@ -2,19 +2,22 @@
 
 Channel::Channel()
 {
-    this->itemsList.clear();
+    itemsList.clear();
+}
+Channel::Channel(const Channel& givenChannel)
+{
+    title = givenChannel.title;
+    link  = givenChannel.link;
+    desc = givenChannel.desc;
+    itemsList = givenChannel.itemsList;
 }
 Channel::~Channel(){
-    if (! this->itemsList.empty()){
-        //Item* tempItem = NULL;
-        while(this->itemsList.empty()){
-            delete itemsList.takeLast();
-        }
-    }
+    qDebug("in Channel;s destructor");
+    itemsList.clear();
+    qDebug("just leaving Channels Dstructor");
 }
-void Channel::addItem(Item* givenItem){
-    if (givenItem ) // if not null
-        this->itemsList.append(givenItem);
+void Channel::addItem(Item givenItem){
+    itemsList.append(givenItem);
 }
 void Channel::setTitle(QString t){
     this->title = t;
@@ -39,4 +42,8 @@ QString Channel::getDesc(){
 }
 QString Channel::getLang(){
     return this->lang;
+}
+int Channel::getSize()
+{
+    return itemsList.size();
 }

@@ -16,13 +16,12 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     //QVariant headerData(int section, Qt::Orientation orientation,int role) const;
-    void setItemsList(QList<Item*>);
+    void setItemsList(QList<Item>);
     // just for testing
-    int GetSize();
-    QList<Item*> GetList(){return m_itemsList;}
+    QList<Item> GetList(){return m_itemsList;}
     QString GetLink(int);
 private:
-    QList<Item*> m_itemsList;
+    QList<Item> m_itemsList;
 };
 
 #endif // FEEDMODEL_H
