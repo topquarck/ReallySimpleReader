@@ -31,11 +31,15 @@ private slots:
     //the following slots for the viewing of the channel names in the left listview
     void HandleFetchedCahnnels();
     void HandleChannelsViewSelection(QModelIndex);
+    void HandleWebViewLoadStarted();
+    void HandleWebViewLoadFinished(bool);
 
 private:    //methods
     void CreateToolBar();
     void AddModelsSignals();
     void RestoreDefaultWindowState();
+    void SetupUIComponents();
+    void AddUISignals();
 
 private:
     Ui::RSRMainWindow*      ui;

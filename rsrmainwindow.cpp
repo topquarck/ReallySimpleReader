@@ -2,7 +2,6 @@
 #include "ui_rsrmainwindow.h"
 #include "reallysimplereader.h"
 #include "feedmodel.h"
-//testing
 #include "item.h"
 //for restoring state of the main window
 #include <QByteArray>
@@ -17,6 +16,8 @@ RSRMainWindow::RSRMainWindow(QWidget *parent)
     //this->FillView();
     //
     this->RestoreDefaultWindowState();
+    this->SetupUIComponents();
+    this->AddUISignals();
 }
 
 RSRMainWindow::~RSRMainWindow()
@@ -38,7 +39,45 @@ void RSRMainWindow::CreateToolBar()
             this,SLOT(GetFeeds()));
     ui->m_mainToolBar->addAction(m_pGetFeedsAction);
 }
+void RSRMainWindow::SetupUIComponents()
+{
+    ui->m_webProgressBar->hide();
+    ui->m_webProgressBar->reset();
+    ui->m_webProgressBar->setMinimum(0);
+    ui->m_webProgressBar->setMaximum(0);
 
+}
+void RSRMainWindow::AddUISignals()
+{
+    connect(ui->m_webView,SIGNAL(loadStarted()),
+            this,SLOT(HandleWebViewLoadStarted()));
+    /*connect(ui->m_webView,SIGNAL(loadStarted()),
+            ui->m_webProgressBar,SLOT(reset()) );*/
+    connect(ui->m_webView,SIGNAL(loadProgress(int)),
+            ui->m_webProgressBar,SLOT(setValue(int)) );
+    connect(ui->m_webView,SIGNAL(loadFinished(bool)),
+            this,SLOT(HandleWebViewLoadFinished(bool)));
+}
+void RSRMainWindow::HandleWebViewLoadStarted()
+{
+    if (!ui->m_webProgressBar->isVisible())
+        ui->m_webProgressBar->show();
+    ui->m_webProgressBar->reset();
+    ui->m_statusBar->showMessage(" opening page "+
+            ui->m_webView->url().toString());
+}
+void RSRMainWindow::HandleWebViewLoadFinished(bool ok)
+{
+    if (ok){
+        ui->m_webProgressBar->reset();
+        ui->m_webProgressBar->hide();
+        ui->m_statusBar->showMessage("Finished Loading "+ui->m_webView->url().toString());
+    }else{
+        ui->m_webProgressBar->reset();
+        ui->m_webProgressBar->hide();
+        ui->m_statusBar->showMessage("ERROR Loading "+ui->m_webView->url().toString());
+    }
+}
 /*********** the following method is commented till we enable saving
               the state of the wain window
 void RSRMainWindow::SaveState()
