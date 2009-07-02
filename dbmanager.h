@@ -2,8 +2,8 @@
 #define DBMANAGER_H
 
 #include <QObject>
-class Channel;
-class Item;
+/*class Channel;
+class Item;*/
 class DBConnector;
 /**
   This Class is the one responsible for reading/Writing to/from
@@ -14,20 +14,22 @@ class DBManager : public QObject
     Q_OBJECT
 public:
     DBManager();
+    DBManager(QObject* parent);
     virtual ~DBManager();
-    void GetTags();
+    /*void GetTags();
     void GetAllData();
     void GetUnread();
     void GetRecent();
     void StoreChannel(Channel&);
-    void StoreItem(Item&);
+    void StoreItem(Item&);*/
+    QStringList GetChannelsURLs();
 
 private:
     void CleanUp();
 
 private:
-    Channel*        m_pChannel;
-    Item*           m_pItem;
+    /*Channel*        m_pChannel;
+    Item*           m_pItem;*/
     DBConnector*    m_pConnector;
 };
 
