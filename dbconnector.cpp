@@ -2,11 +2,13 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
-//just for testing only
-/*#include <QVariant>
-#include <iostream>*/
-//end testing
+
 DBConnector::DBConnector()
+{
+    m_pDatabase = NULL;
+    m_pQuery    = NULL;
+}
+DBConnector::DBConnector(QObject* parent): QObject(parent)
 {
     m_pDatabase = NULL;
     m_pQuery    = NULL;
@@ -57,27 +59,29 @@ bool  DBConnector::OpenConnection()
 }
 QSqlQuery& DBConnector::RetreiveData(QString queryText)
 {
+    qDebug("in REstreiveData methid, dbConnnector class");
+
     if (m_pQuery){
         delete m_pQuery;
-        m_pQuery = NULL;
     }
+        //now, try to open the db
+        if (!this->OpenConnection()){
+            //the Db refused to open DAMN IT
+            qDebug("the Db refused to open DAMN IT, in dbconnector");
+            return *m_pQuery; // which is nonactive, nonValid query
+        }
+
     m_pQuery = new QSqlQuery(*m_pDatabase);
+
     if (! m_pQuery->exec(queryText)){
         //report error
         emit QueryErrorSignal(m_pQuery->lastError().text());
-        return *m_pQuery; // which is NULL;
+        return *m_pQuery; // which is nonactive, nonValid query
     }
     //else: the select query was executed
-
-    // For testing only
-    //print out the results
-    /*while (m_pQuery->next()){
-        std::cout<<m_pQuery->value(2).toString().toStdString()<<"\n";
-    }
-    */
+    qDebug("size po fthe query is : %d",m_pQuery->size() );
     return *m_pQuery;
 }
-
 
 /**
   this method executes the query created by the DBManager

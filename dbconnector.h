@@ -13,8 +13,8 @@ class DBConnector : public QObject
     Q_OBJECT
 public:
     DBConnector();
+    DBConnector(QObject* parent) ;
     virtual         ~DBConnector();
-    bool            OpenConnection();
     bool            IsOpen();
     bool            InsertData(QString);
     QSqlQuery&      RetreiveData(QString);
@@ -24,7 +24,8 @@ signals:
     void QueryErrorSignal(QString);
 
 private:
-    void CleanUp();
+    void            CleanUp();
+    bool            OpenConnection();
 
 private: // variables
     QSqlDatabase*   m_pDatabase;
