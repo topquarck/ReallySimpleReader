@@ -85,7 +85,6 @@
     <value type="QString" >KDE_SESSION_UID=500</value>
     <value type="QString" >KDE_SESSION_VERSION=4</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
-    <value type="QString" >LANGUAGE=</value>
     <value type="QString" >LESSOPEN=|/usr/bin/lesspipe.sh %s</value>
     <value type="QString" >LOGNAME=ibrahim</value>
     <value type="QString" >MAIL=/var/spool/mail/ibrahim</value>
@@ -118,7 +117,7 @@
     <value type="QString" >CONFIG+=debug</value>
    </valuelist>
    <value key="abstractProcess.command" type="QString" >/usr/bin/qmake-qt4</value>
-   <value key="abstractProcess.enabled" type="bool" >true</value>
+   <value key="abstractProcess.enabled" type="bool" >false</value>
    <value key="abstractProcess.workingDirectory" type="QString" >/home/ibrahim/myC++Files/ReallySimpleReader</value>
    <value key="buildConfiguration" type="int" >2</value>
   </valuemap>
@@ -148,7 +147,6 @@
     <value type="QString" >KDE_SESSION_UID=500</value>
     <value type="QString" >KDE_SESSION_VERSION=4</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
-    <value type="QString" >LANGUAGE=</value>
     <value type="QString" >LESSOPEN=|/usr/bin/lesspipe.sh %s</value>
     <value type="QString" >LOGNAME=ibrahim</value>
     <value type="QString" >MAIL=/var/spool/mail/ibrahim</value>
@@ -206,7 +204,6 @@
     <value type="QString" >KDE_SESSION_UID=500</value>
     <value type="QString" >KDE_SESSION_VERSION=4</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
-    <value type="QString" >LANGUAGE=</value>
     <value type="QString" >LESSOPEN=|/usr/bin/lesspipe.sh %s</value>
     <value type="QString" >LOGNAME=ibrahim</value>
     <value type="QString" >MAIL=/var/spool/mail/ibrahim</value>
