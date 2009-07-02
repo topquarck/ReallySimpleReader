@@ -20,7 +20,8 @@ SOURCES += rsrmainwindow.cpp \
     main.cpp \
     feedmodel.cpp \
     feedstore.cpp \
-    channellistmodel.cpp
+    channellistmodel.cpp\
+    dbconnector.cpp
 HEADERS += rsrmainwindow.h \
     item.h \
     channel.h \
@@ -31,6 +32,7 @@ HEADERS += rsrmainwindow.h \
     dbconnector.h \
     feedmodel.h \
     feedstore.h \
-    channellistmodel.h
+    channellistmodel.h\
+    dbconnector.h
 FORMS += rsrmainwindow.ui
 OTHER_FILES += README.txt

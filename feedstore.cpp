@@ -10,6 +10,7 @@ FeedStore::FeedStore()
     m_pFile = NULL;
     m_isFileOpen = false;
     m_pTextStream = NULL;
+    RetreiveFeeds();
 }
 FeedStore::FeedStore(QObject* parent):QObject(parent)
 {
