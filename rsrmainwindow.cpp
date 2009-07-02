@@ -18,6 +18,7 @@ RSRMainWindow::RSRMainWindow(QWidget *parent)
     this->RestoreDefaultWindowState();
     this->SetupUIComponents();
     this->AddUISignals();
+    Init();
 }
 
 RSRMainWindow::~RSRMainWindow()
@@ -31,6 +32,18 @@ RSRMainWindow::~RSRMainWindow()
     if (m_pReader)
         delete m_pReader;
     delete ui;
+}
+void RSRMainWindow::Init()
+{
+    //get initial data from the DB
+    ui->m_statusBar->showMessage("Loaging Feeds List ... ");
+    CreateReader();
+    this->GetFeeds();
+}
+void RSRMainWindow::CreateReader()
+{
+    m_pReader = new ReallySimpleReader(this);
+    this->AddModelsSignals();
 }
 void RSRMainWindow::CreateToolBar()
 {
@@ -105,12 +118,12 @@ void RSRMainWindow::RestoreDefaultWindowState()
 
 void RSRMainWindow::GetFeeds()
 {
-    //if (!m_pReader)
-        m_pReader = new ReallySimpleReader(this);
-    //m_pReader->SetURL("http://feeds.feedburner.com/f055");
-    //m_pReader->SetURL("http://www.codeproject.com/webservices/articlerss.aspx?cat=2");
-
-    this->AddModelsSignals();
+    if (!m_pReader)
+        CreateReader();
+    //
+    ui->m_listView->reset();
+    ui->m_tableView->reset();
+    //
     m_pReader->GetFeeds();
 }
 void RSRMainWindow::AddModelsSignals()
@@ -121,6 +134,7 @@ void RSRMainWindow::AddModelsSignals()
              this,SLOT(HandleDownloadProgress(int,int)) );
     connect(m_pReader,SIGNAL(SignalDownloadError(QString)),
             this,SLOT(HandleDownloadErrors(QString)) );*/
+
     connect(m_pReader,SIGNAL(SignalAllChannelsFetched()),
             this,SLOT(HandleFetchedCahnnels()) );
 }

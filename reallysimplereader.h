@@ -2,14 +2,13 @@
 #define REALLYSIMPLEREADER_H
 
 #include <QObject>
-//class DBManager;
-
+class DBManager;
 class HttpDownloader;
 class Qlist;
 class Item;
 class Channel;
 //to add the RSS URL storing functionality
-class FeedStore;
+//class FeedStore;
 #include <QStringList>
 /**
   the Main/Central class of the whole App
@@ -24,15 +23,10 @@ class ReallySimpleReader : public QObject
 public:
     ReallySimpleReader(QObject *parent);
     virtual ~ReallySimpleReader();
-    //void StartUp();
-    //void LoadLocalData();
     void GetFeeds();
-    void SetURL(QString );
     QList<Channel> GetChannelsList();
 
 public slots:
-    //void StartParsing();
-    //void StartViewing();
     void RetreiveChannels();
 
 signals:
@@ -43,11 +37,13 @@ private:
     //HttpDownloader*     m_pHttpDownloader;
     //refactored to be a stringlist instead of one single url
     //QString             m_url;
-    QStringList         m_urlList;
+    QStringList              m_urlList;
     //to add the RSS URL storing functionality
-    FeedStore*          m_pStore;
-    QList<Channel>      m_channelsList;
-    int                 m_channelHitCounter;
+    // commented on 30-6 to get channels from db
+    //FeedStore*          m_pStore;
+    DBManager*             m_pDbManager;
+    QList<Channel>        m_channelsList;
+    int                  m_channelHitCounter;
 };
 
 #endif // REALLYSIMPLEREADER_H

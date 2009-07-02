@@ -40,6 +40,10 @@ private:    //methods
     void RestoreDefaultWindowState();
     void SetupUIComponents();
     void AddUISignals();
+    //
+    void Init();
+    void CreateReader();
+    //
 
 private:
     Ui::RSRMainWindow*      ui;

@@ -1,5 +1,5 @@
 #include "reallysimplereader.h"
-//#include "dbmanager.h"
+#include "dbmanager.h"
 //#include "xmlparser.h"
 #include "httpdownloader.h"
 //#include "rsrmainwindow.h"
@@ -13,56 +13,42 @@ ReallySimpleReader::ReallySimpleReader(QObject *parent):QObject(parent)
     //m_pHttpDownloader = NULL;
     //m_pXmlParser = NULL;
     //to add the RSS URL storing functionality
-    m_pStore = NULL;
+    //m_pStore = NULL;
     m_channelHitCounter = 0 ;
+    //
+    m_pDbManager = NULL;
 }
 ReallySimpleReader::~ReallySimpleReader()
 {}
-void ReallySimpleReader::SetURL(QString u)
-{
-    //this->m_url = u;
-}
+
 void ReallySimpleReader::GetFeeds()
 {
     qDebug("in Get feeds at RSR.cpp");
-    //will make the reader get the URl from the file instead of sending it as a pram
-    m_pStore = new FeedStore(this);
 
-    /*m_url = m_pStore->GetFeeds().at(0);
-    m_pHttpDownloader = new HttpDownloader(m_url,this);
-    connect (m_pHttpDownloader,SIGNAL(SignalFinished()),
-            this,SLOT(StartParsing()) );
-    m_pHttpDownloader->DownloadURL();*/
+    m_pDbManager = new DBManager(this);
+    m_urlList = m_pDbManager->GetChannelsURLs();
 
-    m_urlList = m_pStore->GetFeeds();
-    //i think. need todelete the store
-    delete m_pStore;
-    m_pStore = NULL;
 
-    //now, create n parsers each one of them downloads and parses a single URL from the urlList
-    HttpDownloader* tempDownloader = NULL;
-    for (int i=0;i<m_urlList.size();i++){
-        tempDownloader = new HttpDownloader(m_urlList.at(i),this);
-        connect(tempDownloader,SIGNAL(SignalDownloadDone()),
-                this,SLOT(RetreiveChannels()) );
-        m_downloadersList.append(tempDownloader);
-        tempDownloader->DownloadURL();
-    }//end for
-    qDebug("im getfeeds, RSR, after the downloader packed in the list, size is %d",
-            m_downloadersList.size() );
+    if (!m_urlList.isEmpty()){
+        //now, create n parsers each one of them downloads and parses a single URL from the urlList
+        HttpDownloader* tempDownloader = NULL;
+
+        for (int i=0;i<m_urlList.size();i++){
+            tempDownloader = new HttpDownloader(m_urlList.at(i),this);
+            connect(tempDownloader,SIGNAL(SignalDownloadDone()),
+                    this,SLOT(RetreiveChannels()) );
+            m_downloadersList.append(tempDownloader);
+            tempDownloader->DownloadURL();
+        }//end for
+
+        qDebug("im getfeeds, RSR, after the downloader packed in the list, size is %d",
+                m_downloadersList.size() );
+
+    }//end if channels list not empty
+    delete m_pDbManager;
+    m_pDbManager = NULL;
+
 }
-
-/*void ReallySimpleReader::StartParsing()
-{
-    qDebug("in StartParsing");
-    if (!m_pXmlParser)
-        m_pXmlParser = new XmlParser(this);
-    connect(m_pXmlParser,SIGNAL(ParseDone()),
-            this,SLOT(StartViewing()) );
-    m_pXmlParser->SetData(m_pHttpDownloader->GetData());
-    m_pXmlParser->start();
-}
-*/
 
 /**
   this Slot  is called each time a parser in the list finishes parsing
@@ -103,15 +89,6 @@ QList<Channel> ReallySimpleReader::GetChannelsList()
            m_channelsList.size());
     return m_channelsList;
 }
-/*void ReallySimpleReader::StartViewing()
-{
-    emit Finished();
-}
-*/
-/*QList<Item*> ReallySimpleReader::GetItemsList()
-{
-    return m_pXmlParser->GetChannel().getItems();
-}*/
 
 
 
