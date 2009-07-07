@@ -32,6 +32,17 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFeed">
+    <property name="title">
+     <string>Feeds</string>
+    </property>
+    <addaction name="actionFetchAllFeeds"/>
+    <addaction name="actionAddFeedSource"/>
+    <addaction name="actionManageFeedsList"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFeed"/>
   </widget>
   <widget class="QToolBar" name="m_mainToolBar">
    <property name="toolButtonStyle">
@@ -115,6 +126,29 @@
     </layout>
    </widget>
   </widget>
+  <action name="actionFetchAllFeeds">
+   <property name="text">
+    <string>Fetch All Feeds</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="toolTip">
+    <string>Exit from RSR</string>
+   </property>
+  </action>
+  <action name="actionAddFeedSource">
+   <property name="text">
+    <string>Add Feed Source</string>
+   </property>
+  </action>
+  <action name="actionManageFeedsList">
+   <property name="text">
+    <string>Manage Feeds List</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

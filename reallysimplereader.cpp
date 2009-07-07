@@ -4,8 +4,7 @@
 #include "httpdownloader.h"
 //#include "rsrmainwindow.h"
 #include "channel.h"
-//to add the RSS URL storing functionality
-#include "feedstore.h"
+
 #include <QStringList>
 #include <QList>
 ReallySimpleReader::ReallySimpleReader(QObject *parent):QObject(parent)
@@ -24,7 +23,7 @@ ReallySimpleReader::~ReallySimpleReader()
 void ReallySimpleReader::GetFeeds()
 {
     qDebug("in Get feeds at RSR.cpp");
-
+    emit SignalChannelFetchStarted();
     m_pDbManager = new DBManager(this);
     m_urlList = m_pDbManager->GetChannelsURLs();
 

@@ -35,6 +35,7 @@ RSRMainWindow::~RSRMainWindow()
 }
 void RSRMainWindow::Init()
 {
+    setAttribute(Qt::WA_DeleteOnClose);
     //get initial data from the DB
     ui->m_statusBar->showMessage("Loaging Feeds List ... ");
     CreateReader();
@@ -57,7 +58,7 @@ void RSRMainWindow::SetupUIComponents()
     ui->m_webProgressBar->hide();
     ui->m_webProgressBar->reset();
     ui->m_webProgressBar->setMinimum(0);
-    ui->m_webProgressBar->setMaximum(0);
+    ui->m_webProgressBar->setMaximum(100);
 
 }
 void RSRMainWindow::AddUISignals()
@@ -70,6 +71,11 @@ void RSRMainWindow::AddUISignals()
             ui->m_webProgressBar,SLOT(setValue(int)) );
     connect(ui->m_webView,SIGNAL(loadFinished(bool)),
             this,SLOT(HandleWebViewLoadFinished(bool)));
+    // the menu signals:
+    connect(ui->actionFetchAllFeeds,SIGNAL(triggered()),
+             this,SLOT(GetFeeds()) );
+    connect(ui->actionExit,SIGNAL(triggered()),
+            this,SLOT(close()) );
 }
 void RSRMainWindow::HandleWebViewLoadStarted()
 {
@@ -137,10 +143,23 @@ void RSRMainWindow::AddModelsSignals()
 
     connect(m_pReader,SIGNAL(SignalAllChannelsFetched()),
             this,SLOT(HandleFetchedCahnnels()) );
+    connect(m_pReader,SIGNAL(SignalChannelFetchStarted()),this,SLOT(HandleChannelFetchStarted()));
+}
+/**
+  this SLOT deactivates the toolbar action and the menu item action till channels are fetched
+  */
+void RSRMainWindow::HandleChannelFetchStarted()
+{
+    m_pGetFeedsAction->setEnabled(false);
+    ui->actionFetchAllFeeds->setEnabled(false);
 }
 void RSRMainWindow::HandleFetchedCahnnels()
 {
     qDebug("in Windows HandleFetchedCahnnels, which invoked after emitting the all channels signal");
+    //7-7-09 :will now re-enable the toolbar action and the menu item
+    m_pGetFeedsAction->setEnabled(true);
+    ui->actionFetchAllFeeds->setEnabled(true);
+    //end 7-7
     m_pChannelsModel = new ChannelListModel();
     m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());
     ui->m_listView->setSelectionBehavior(QAbstractItemView::SelectRows);

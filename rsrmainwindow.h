@@ -33,6 +33,7 @@ private slots:
     void HandleChannelsViewSelection(QModelIndex);
     void HandleWebViewLoadStarted();
     void HandleWebViewLoadFinished(bool);
+    void HandleChannelFetchStarted();
 
 private:    //methods
     void CreateToolBar();

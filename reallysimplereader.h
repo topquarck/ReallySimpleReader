@@ -32,6 +32,7 @@ public slots:
 signals:
     //void Finished();
     void SignalAllChannelsFetched();
+    void SignalChannelFetchStarted();
 private:
     QList<HttpDownloader*>   m_downloadersList;
     //HttpDownloader*     m_pHttpDownloader;
