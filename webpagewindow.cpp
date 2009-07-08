@@ -27,6 +27,9 @@ WebPageWindow::WebPageWindow(QString givenUrl,QWidget *parent) :
 void WebPageWindow::Init()
 {
     ui->setupUi(this);
+    //
+    //setAttribute(Qt::WA_DeleteOnClose);
+    //
     this->CreateToolBarActions();
     this->SetupStatusBar();
     this->AddWebViewSignals();    
@@ -100,7 +103,7 @@ void WebPageWindow::LoadPage()
 {
     if (m_pUrl && ! m_pUrl->isEmpty() && m_pUrl->isValid()){
         ui->m_webView->load(*m_pUrl);
-        //ui->m_webView->show();
+        setWindowTitle(m_pUrl->toString()+" - ReallySimpleReader.");
     }
 }
 void WebPageWindow::LoadPage(QString url)
@@ -108,7 +111,7 @@ void WebPageWindow::LoadPage(QString url)
     SetURL(url);
     if (m_pUrl && ! m_pUrl->isEmpty() && m_pUrl->isValid()){
         ui->m_webView->load(*m_pUrl);
-        ui->m_webView->show();
+        setWindowTitle(m_pUrl->toString()+" - ReallySimpleReader.");
     }
 }
 void WebPageWindow::SetURL(QString givenurl)

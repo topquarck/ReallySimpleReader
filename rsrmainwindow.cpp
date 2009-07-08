@@ -8,13 +8,19 @@
 #include <QFile>
 #include "channellistmodel.h"
 #include "channel.h"
+//added to view a new window whan bouble-clicking an article
+#include "webpagewindow.h"
+#include <QProgressBar>
+#include <QLabel>
+
+
 RSRMainWindow::RSRMainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::RSRMainWindow)
 {
     ui->setupUi(this);
     this->CreateToolBar();
-    //this->FillView();
-    //
+    //to add the progressbar to the statusbar
+    SetupStatusBar();
     this->RestoreDefaultWindowState();
     this->SetupUIComponents();
     this->AddUISignals();
@@ -36,8 +42,13 @@ RSRMainWindow::~RSRMainWindow()
 void RSRMainWindow::Init()
 {
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowTitle("ReallySimpleReader 0.1");
+    m_pFeedModel = NULL;
+    m_pChannelsModel = NULL;
+    m_pReader = NULL;
+    //
     //get initial data from the DB
-    ui->m_statusBar->showMessage("Loaging Feeds List ... ");
+    m_pStatusLabel->setText("Loading Feeds List ... ");
     CreateReader();
     this->GetFeeds();
 }
@@ -54,21 +65,15 @@ void RSRMainWindow::CreateToolBar()
     ui->m_mainToolBar->addAction(m_pGetFeedsAction);
 }
 void RSRMainWindow::SetupUIComponents()
-{
-    ui->m_webProgressBar->hide();
-    ui->m_webProgressBar->reset();
-    ui->m_webProgressBar->setMinimum(0);
-    ui->m_webProgressBar->setMaximum(100);
-
-}
+{}
 void RSRMainWindow::AddUISignals()
 {
     connect(ui->m_webView,SIGNAL(loadStarted()),
             this,SLOT(HandleWebViewLoadStarted()));
-    /*connect(ui->m_webView,SIGNAL(loadStarted()),
-            ui->m_webProgressBar,SLOT(reset()) );*/
+
     connect(ui->m_webView,SIGNAL(loadProgress(int)),
-            ui->m_webProgressBar,SLOT(setValue(int)) );
+            m_pProgressBar,SLOT(setValue(int)) );
+
     connect(ui->m_webView,SIGNAL(loadFinished(bool)),
             this,SLOT(HandleWebViewLoadFinished(bool)));
     // the menu signals:
@@ -79,22 +84,22 @@ void RSRMainWindow::AddUISignals()
 }
 void RSRMainWindow::HandleWebViewLoadStarted()
 {
-    if (!ui->m_webProgressBar->isVisible())
-        ui->m_webProgressBar->show();
-    ui->m_webProgressBar->reset();
-    ui->m_statusBar->showMessage(" opening page "+
+    if (!m_pProgressBar->isVisible())
+        m_pProgressBar->show();
+    m_pProgressBar->reset();
+    m_pStatusLabel->setText(" Loading page "+
             ui->m_webView->url().toString());
 }
 void RSRMainWindow::HandleWebViewLoadFinished(bool ok)
 {
     if (ok){
-        ui->m_webProgressBar->reset();
-        ui->m_webProgressBar->hide();
-        ui->m_statusBar->showMessage("Finished Loading "+ui->m_webView->url().toString());
+        m_pProgressBar->reset();
+        m_pProgressBar->hide();
+        m_pStatusLabel->clear();
     }else{
-        ui->m_webProgressBar->reset();
-        ui->m_webProgressBar->hide();
-        ui->m_statusBar->showMessage("ERROR Loading "+ui->m_webView->url().toString());
+        m_pProgressBar->reset();
+        m_pProgressBar->hide();
+        m_pStatusLabel->setText("ERROR Loading "+ui->m_webView->url().toString());
     }
 }
 /*********** the following method is commented till we enable saving
@@ -160,6 +165,8 @@ void RSRMainWindow::HandleFetchedCahnnels()
     m_pGetFeedsAction->setEnabled(true);
     ui->actionFetchAllFeeds->setEnabled(true);
     //end 7-7
+    m_pStatusLabel->clear();
+
     m_pChannelsModel = new ChannelListModel();
     m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());
     ui->m_listView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -202,8 +209,10 @@ void RSRMainWindow::HandleChannelsViewSelection(QModelIndex index)
     if (!index.isValid() || index.row() >= m_pChannelsModel->rowCount())
          return ;
     //will create the feed items model and fill it with items
-    if (m_pFeedModel)
+    if (m_pFeedModel){
         delete m_pFeedModel;
+        m_pFeedModel = NULL;
+    }
 
     m_pFeedModel = new FeedModel();
     ui->m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -214,7 +223,57 @@ void RSRMainWindow::HandleChannelsViewSelection(QModelIndex index)
     ui->m_tableView->setModel(m_pFeedModel);
     //ui->m_tableView->resizeColumnsToContents();
     ui->m_tableView->show();
+    //added to handle the double clicks
+    connect(ui->m_tableView,SIGNAL(doubleClicked(QModelIndex)),
+            this,SLOT(HandleDoubleClicked(QModelIndex)) );
 
 }
 
+void RSRMainWindow::HandleDoubleClicked(QModelIndex index)
+{
+    if (!index.isValid() || index.row() >= m_pFeedModel->rowCount())
+         return ;
+    //else
+    QString url = m_pFeedModel->GetLink(index.row());
 
+    /**************8888 NEED REFACTORING
+      a very disgusting solution, But it works !!
+      the problem: open a window, close it  and then open it again --> will not open
+      because the url entry correspondind to it still exists in the hashTable, BUT whent it closed it didnt inform
+      the hashtable to delete it : cant find a method to notfiy hashtable with the death of the window
+
+       the disgusstin solution : if the url already exists in the hashtable : close the window - even it was already dead-
+       and remove tje entry, then treat it as a new entry (delete it and recreate it )
+      **********************/
+    if (m_webWindowsHash.contains(url)){
+        //just view it
+	//m_webWindowsHash.value(url)->raise();
+	m_webWindowsHash.value(url)->close();
+	m_webWindowsHash.remove(url);
+    }
+    //else{
+        //else , the url is new,
+        //create a window and insert it into the hash
+        WebPageWindow* window = new WebPageWindow(this);
+        //window->setObjectName(url);
+	//connect(window,SIGNAL(destroyed(QObject*)),this,SLOT(HandleDestroyedWindow(QObject*)) );
+        window->LoadPage(url);
+        window->show();
+        m_webWindowsHash.insert(url,window);
+    //}
+}
+
+/**
+  this method adds a label and a progressbar to the statusbar
+  */
+void RSRMainWindow::SetupStatusBar()
+{
+    m_pStatusLabel = new QLabel(this);
+    ui->m_statusBar->addWidget(m_pStatusLabel,4);
+
+    m_pProgressBar = new QProgressBar(this);
+    m_pProgressBar->setMinimum(0);
+    m_pProgressBar->setMaximum(100);
+    ui->m_statusBar->addWidget(m_pProgressBar,1);
+    m_pProgressBar->hide();
+}
