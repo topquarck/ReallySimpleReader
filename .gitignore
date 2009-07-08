@@ -1,0 +1,15 @@
+
+###########################################################################
+###################### My git ignore List #################################
+
+##### 1. ignore .o files
+*.o
+
+#### 2. ignore the executable file : ReallySimpleReader
+ReallySimpleReader
+
+### 3. ignore all moc files : generated
+moc_*
+
+## 4. ignore ui_ files : generated
+ui_*
