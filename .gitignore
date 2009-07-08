@@ -13,3 +13,6 @@ moc_*
 
 ## 4. ignore ui_ files : generated
 ui_*
+
+### 5. the pushscript file : a file contains the git push command to push changes with the remote github repo
+pushScript.sh
