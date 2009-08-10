@@ -7,9 +7,8 @@ class QUrl;
 //
 class QProgressBar;
 class QLabel;
-class QSpacerItem;
-class QHBoxLayout;
-
+//
+class QWebSettings;
 
 namespace Ui {
     class WebPageWindow;
@@ -34,6 +33,8 @@ private:    //methods
     void Init();
     void AddWebViewSignals();
     void SetupStatusBar();
+    //
+    void LoadWebSettings();
 
 private slots:
     void HandleWebViewLoadStarted();
@@ -49,6 +50,8 @@ private:
     //trying
     QProgressBar            *m_pProgressBar;
     QLabel                  *m_pStatusLabel;
+    //
+    QWebSettings	    *m_pSettings;
 };
 
 #endif // WEBPAGEWINDOW_H

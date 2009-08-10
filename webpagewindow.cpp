@@ -4,6 +4,8 @@
 //
 #include <QProgressBar>
 #include <QLabel>
+//
+#include <QWebSettings>
 
 WebPageWindow::WebPageWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,6 +35,8 @@ void WebPageWindow::Init()
     this->CreateToolBarActions();
     this->SetupStatusBar();
     this->AddWebViewSignals();    
+    //
+    LoadWebSettings();
 }
 void WebPageWindow::SetupStatusBar()
 {
@@ -47,6 +51,11 @@ void WebPageWindow::SetupStatusBar()
 }
 WebPageWindow::~WebPageWindow()
 {
+    qDebug("in WebPageWindow DEstructor");
+    if (m_pProgressBar)
+	delete m_pProgressBar;
+    if (m_pStatusLabel)
+	delete m_pStatusLabel;
     if (m_pUrl)
         delete m_pUrl;
     this->DeleteToolBarActions();
@@ -101,6 +110,7 @@ void WebPageWindow::DeleteToolBarActions()
 
 void WebPageWindow::LoadPage()
 {
+    qDebug("in LoadPAge, WebPageWindow");
     if (m_pUrl && ! m_pUrl->isEmpty() && m_pUrl->isValid()){
         ui->m_webView->load(*m_pUrl);
         setWindowTitle(m_pUrl->toString()+" - ReallySimpleReader.");
@@ -108,6 +118,7 @@ void WebPageWindow::LoadPage()
 }
 void WebPageWindow::LoadPage(QString url)
 {
+    qDebug("in LoadPAge, WebPageWindow");
     SetURL(url);
     if (m_pUrl && ! m_pUrl->isEmpty() && m_pUrl->isValid()){
         ui->m_webView->load(*m_pUrl);
@@ -133,6 +144,7 @@ void WebPageWindow::AddWebViewSignals()
 
 void WebPageWindow::HandleWebViewLoadStarted()
 {
+    qDebug("Load Started");
     m_pProgressBar->show();
     m_pProgressBar->reset();
     m_pStatusLabel->setText("Loading Page "+ m_pUrl->toString() );
@@ -140,6 +152,7 @@ void WebPageWindow::HandleWebViewLoadStarted()
 
 void WebPageWindow::HandleWebViewLoadFinished(bool ok)
 {
+    qDebug("load Finished");
     if (ok){
         m_pProgressBar->hide();
         m_pStatusLabel->clear();
@@ -149,6 +162,14 @@ void WebPageWindow::HandleWebViewLoadFinished(bool ok)
     }
 }
 
+//
+void WebPageWindow::LoadWebSettings()
+{
+    m_pSettings = ui->m_webView->settings();
+    m_pSettings->setAttribute(QWebSettings::JavaEnabled,false);
+    m_pSettings->setAttribute(QWebSettings::JavascriptCanOpenWindows,false);
+    m_pSettings->setAttribute(QWebSettings::PluginsEnabled,false);
+}
 
 
 
