@@ -14,7 +14,7 @@ Channel::Channel(const Channel& givenChannel)
 Channel::~Channel(){
     qDebug("in Channel;s destructor");
     itemsList.clear();
-    qDebug("just leaving Channels Dstructor");
+    //qDebug("just leaving Channels Dstructor");
 }
 void Channel::addItem(Item givenItem){
     itemsList.append(givenItem);

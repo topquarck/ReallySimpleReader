@@ -1,9 +1,12 @@
 #ifndef FEEDMODEL_H
 #define FEEDMODEL_H
+
 #include <QAbstractTableModel>
-class QModelIndex;
 #include <QList>
+
+class QModelIndex;
 class Item;
+
 class FeedModel : public QAbstractTableModel
 {
 public:

@@ -18,7 +18,18 @@ ReallySimpleReader::ReallySimpleReader(QObject *parent):QObject(parent)
     m_pDbManager = NULL;
 }
 ReallySimpleReader::~ReallySimpleReader()
-{}
+{
+    if (m_pDbManager)
+	delete m_pDbManager;
+
+    if (!m_downloadersList.isEmpty()){
+	HttpDownloader* d;
+	while (!m_downloadersList.isEmpty()){
+	    d = m_downloadersList.takeFirst();
+	    delete d;
+	}
+    }
+}
 
 void ReallySimpleReader::GetFeeds()
 {
@@ -76,6 +87,7 @@ void ReallySimpleReader::RetreiveChannels()
             tempDownloader = m_downloadersList.takeFirst();
             qDebug("just before deleting a downloader");
             delete tempDownloader;
+	    qDebug("-->After deleting a downloader ");
         }
         //
         qDebug("just before emitting : SignalAllChannelsFetched signal ");

@@ -34,17 +34,11 @@ signals:
     void SignalAllChannelsFetched();
     void SignalChannelFetchStarted();
 private:
-    QList<HttpDownloader*>   m_downloadersList;
-    //HttpDownloader*     m_pHttpDownloader;
-    //refactored to be a stringlist instead of one single url
-    //QString             m_url;
-    QStringList              m_urlList;
-    //to add the RSS URL storing functionality
-    // commented on 30-6 to get channels from db
-    //FeedStore*          m_pStore;
-    DBManager*             m_pDbManager;
-    QList<Channel>        m_channelsList;
-    int                  m_channelHitCounter;
+    QList<HttpDownloader*>	m_downloadersList;
+    QStringList			m_urlList;
+    DBManager			*m_pDbManager;
+    QList<Channel>		m_channelsList;
+    int				m_channelHitCounter;
 };
 
 #endif // REALLYSIMPLEREADER_H

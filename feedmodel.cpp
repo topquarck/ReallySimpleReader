@@ -2,6 +2,7 @@
 #include "item.h"
 #include <QModelIndex>
 #include <QVariant>
+
 FeedModel::FeedModel()
 {
     this->SetHeaders();
