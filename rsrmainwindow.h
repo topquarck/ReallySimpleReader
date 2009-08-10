@@ -31,6 +31,7 @@ public:
 
 public slots:
     void GetFeeds();
+    void AddNewFeed();
 
 private slots:
     void HandleDownLoadFinished();

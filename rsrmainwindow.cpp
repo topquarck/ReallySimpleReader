@@ -12,7 +12,10 @@
 #include "webpagewindow.h"
 #include <QProgressBar>
 #include <QLabel>
-
+//
+#include "addfeeddialog.h"
+//
+#include <QHeaderView>
 
 RSRMainWindow::RSRMainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::RSRMainWindow)
@@ -29,6 +32,7 @@ RSRMainWindow::RSRMainWindow(QWidget *parent)
 
 RSRMainWindow::~RSRMainWindow()
 {
+    qDebug("in ~RSRMainWindow destructor");
     if (m_pGetFeedsAction)
         delete m_pGetFeedsAction;
     if (m_pFeedModel)
@@ -41,6 +45,7 @@ RSRMainWindow::~RSRMainWindow()
 }
 void RSRMainWindow::Init()
 {
+    qDebug("void RSRMainWindow::Init()");
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("ReallySimpleReader 0.1");
     m_pFeedModel = NULL;
@@ -50,10 +55,11 @@ void RSRMainWindow::Init()
     //get initial data from the DB
     m_pStatusLabel->setText("Loading Feeds List ... ");
     CreateReader();
-    this->GetFeeds();
+    //this->GetFeeds();
 }
 void RSRMainWindow::CreateReader()
 {
+    qDebug("void RSRMainWindow::CreateReader()");
     m_pReader = new ReallySimpleReader(this);
     this->AddModelsSignals();
 }
@@ -81,6 +87,9 @@ void RSRMainWindow::AddUISignals()
              this,SLOT(GetFeeds()) );
     connect(ui->actionExit,SIGNAL(triggered()),
             this,SLOT(close()) );
+    // the add feed
+    connect(ui->actionAddFeedSource,SIGNAL(triggered()),
+	    this,SLOT(AddNewFeed()) );
 }
 void RSRMainWindow::HandleWebViewLoadStarted()
 {
@@ -129,12 +138,13 @@ void RSRMainWindow::RestoreDefaultWindowState()
 
 void RSRMainWindow::GetFeeds()
 {
-    if (!m_pReader)
-        CreateReader();
-    //
+    qDebug("void RSRMainWindow::GetFeeds()");
+    if (m_pReader)
+	delete m_pReader;
+
+    CreateReader();
     ui->m_listView->reset();
     ui->m_tableView->reset();
-    //
     m_pReader->GetFeeds();
 }
 void RSRMainWindow::AddModelsSignals()
@@ -155,6 +165,7 @@ void RSRMainWindow::AddModelsSignals()
   */
 void RSRMainWindow::HandleChannelFetchStarted()
 {
+    qDebug("void RSRMainWindow::HandleChannelFetchStarted()");
     m_pGetFeedsAction->setEnabled(false);
     ui->actionFetchAllFeeds->setEnabled(false);
 }
@@ -169,6 +180,7 @@ void RSRMainWindow::HandleFetchedCahnnels()
 
     m_pChannelsModel = new ChannelListModel();
     m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());
+    qDebug("after calling : m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());");
     ui->m_listView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->m_listView->setSelectionMode(QAbstractItemView::SingleSelection);
     connect(ui->m_listView,SIGNAL(clicked(QModelIndex)),
@@ -200,6 +212,10 @@ void RSRMainWindow::HandleItemsViewSelection(QModelIndex index)
          return ;
     //else
     QString url = m_pFeedModel->GetLink(index.row());
+    //
+    ui->m_webView->settings()->setAttribute(QWebSettings::AutoLoadImages,false); //dont know why it doesnt work
+    ui->m_webView->settings()->setAttribute(QWebSettings::JavascriptEnabled,false);
+    //
     ui->m_webView->load(QUrl(url));
 
 }
@@ -222,6 +238,7 @@ void RSRMainWindow::HandleChannelsViewSelection(QModelIndex index)
     m_pFeedModel->setItemsList(m_pChannelsModel->GetChannel(index.row()).getItems() );
     ui->m_tableView->setModel(m_pFeedModel);
     //ui->m_tableView->resizeColumnsToContents();
+    ui->m_tableView->horizontalHeader()->resizeSection(0,500);
     ui->m_tableView->show();
     //added to handle the double clicks
     connect(ui->m_tableView,SIGNAL(doubleClicked(QModelIndex)),
@@ -276,4 +293,13 @@ void RSRMainWindow::SetupStatusBar()
     m_pProgressBar->setMaximum(100);
     ui->m_statusBar->addWidget(m_pProgressBar,1);
     m_pProgressBar->hide();
+}
+
+/**
+  this slot method is used to create a new "AddFeedDialog"
+  */
+void RSRMainWindow::AddNewFeed()
+{
+    AddFeedDialog* dialog = new AddFeedDialog(this);
+    dialog->show();
 }
