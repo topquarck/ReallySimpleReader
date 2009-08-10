@@ -6,6 +6,11 @@ ChannelListModel::ChannelListModel()
 {
     qDebug("in the constructor of the ChannelListModel ");
 }
+ChannelListModel::~ChannelListModel()
+{
+    qDebug("in destructor of ~ChannelListModel");
+    m_channelsList.clear();
+}
 int ChannelListModel::rowCount( const QModelIndex & parent) const
 {
     return m_channelsList.size();
