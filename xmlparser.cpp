@@ -6,19 +6,20 @@
 #include "item.h"
 //
 #include "httpdownloader.h"
-XmlParser::XmlParser(QObject* parent) : QThread(parent)
+XmlParser::XmlParser(QString urlName, QObject* parent) : QThread(parent)
 {
     //init all pointer vars to NULL;
     m_pDoc = NULL;
     m_pRootElement = NULL;
     m_pData = NULL;
     m_pChannel = NULL;
+    m_urlString = urlName;
 }
 XmlParser::~XmlParser()
 {
     qDebug("in xmlParsers destructor");
     CleanUp();
-    qDebug("just leaving xmlParsers destructor");
+    //qDebug("just leaving xmlParsers destructor");
 }
 
 void XmlParser::CleanUp()
@@ -121,9 +122,11 @@ void XmlParser::ParseXML()
   */
 bool XmlParser::OpenBuffer()
 {
-    //std::cout<<"in the getRSS, RSSReader"<<endl;
+    qDebug("bool XmlParser::OpenBuffer()");
+
     m_pDoc = new QDomDocument();
     //if the Buffer contents not loaded to mem
+    if (m_pData->isNull()){qDebug("the data array is null!!");}
     if( !m_pDoc->setContent( *m_pData) ){
         //reportError
         emit SignalParseError(QString("ERROR: Couldn't load the data into DOM"));
@@ -139,17 +142,16 @@ bool XmlParser::OpenBuffer()
   */
 bool XmlParser::ParseRssHead()
 {
+    qDebug("bool XmlParser::ParseRssHead()");
+
     m_pRootElement = new QDomElement(m_pDoc->documentElement());
     //get the tag name if the ROOT and make it Uppercase for comparison
     QString tagName = m_pRootElement->tagName().toUpper();
-    if (tagName!= QString("RSS")){
-        return false;
-    }
-    else if (tagName == QString("RSS")){
+    if (tagName == QString("RSS")){
         return true;
     }
-    //will not get here, it is either rss or not
-    return false;
+    else
+	return false;
 }
 
 /**
@@ -159,6 +161,8 @@ OR returns false if fails
   */
 bool XmlParser::ParseChannel()
 {
+    qDebug("bool XmlParser::ParseChannel()");
+
     QDomElement tempElement = (m_pRootElement->firstChild()).toElement();
     if (! tempElement.isNull()){
         if (tempElement.tagName().toUpper() == QString("CHANNEL")){
@@ -170,6 +174,8 @@ bool XmlParser::ParseChannel()
                 delete m_pChannel;
 
             m_pChannel = new Channel();
+	    m_pChannel->setLink(m_urlString);
+	    Item* tempItem = NULL;
             QDomNode node = tempElement.firstChild();
             QDomElement e;
             while( !node.isNull() ){
@@ -178,7 +184,8 @@ bool XmlParser::ParseChannel()
                 if( e.tagName().toLower() == "title" ){
                     m_pChannel->setTitle(e.text());
                 }else if (e.tagName().toLower() == "link"){
-                    m_pChannel->setLink(e.text());
+		    //commented, expermental
+		    //m_pChannel->setLink(e.text());
                 }else if (e.tagName().toLower() == "description"){
                     m_pChannel->setDesc(e.text());
                 }else if (e.tagName().toLower() == "language"){
@@ -187,7 +194,7 @@ bool XmlParser::ParseChannel()
 
                 //else if the tag is item, will call getitem
                 else if (e.tagName().toLower() == "item"){
-                    Item* tempItem = ParseItem(e);
+		    tempItem = ParseItem(e);
                     m_pChannel->addItem(*tempItem);
                     delete tempItem;
                 }
@@ -219,7 +226,9 @@ bool XmlParser::ParseChannel()
       WILL NOT interrupt the intire Parsing process because one element is
       faulty, So, if failed to parse the element, will return a NULL Object NOT error
   */
-Item* XmlParser::ParseItem(QDomElement givenElement){
+Item* XmlParser::ParseItem(QDomElement givenElement)
+{
+    qDebug("Item* XmlParser::ParseItem(QDomElement givenElement)");
     QDomNode node = givenElement.firstChild();
     //if first child id NULL, return immediately
     if (node.isNull()){
@@ -259,7 +268,71 @@ void XmlParser::run()
     this->ParseXML();
 }
 
+/**
+  added on 18-7-09 to verify if the file is valid or not without storing values in internal members,
+used for verifying newly inserted link
+  */
+bool XmlParser::IsValidRSSFile()
+{
+    if (this->ParseRssHead()){
+	if (this->IsValidChannel())
+	    return true;
+    }
+    return false;
+}
 
+/**
+  this method checks whether the tag name is called channel or not, then fills in the channel object
+  WITH : channel name, link and descrition ONLY, no need to parse the items.
+  used in adding a new channel to the DB.
 
+  @return true if the given channel is valid, false otherwise
+  */
+bool XmlParser::IsValidChannel()
+{
+    QDomElement tempElement = (m_pRootElement->firstChild()).toElement();
+    if (! tempElement.isNull()){
+	if (tempElement.tagName().toUpper() == QString("CHANNEL")){
+	    // till now, every thing is going OK
+	    // we found RSS tag as root, ans its first child is channel tag
+
+	    //just for checking
+	    if (m_pChannel)
+		delete m_pChannel;
+
+	    m_pChannel = new Channel();
+	    //added to fix the problem explained in the next block of comment
+	    m_pChannel->setLink(m_urlString);
+	    QDomNode node = tempElement.firstChild();
+	    QDomElement e;
+	    while( !node.isNull() ){
+	      e = node.toElement();
+	      if( !e.isNull() ){
+		if( e.tagName().toLower() == "title" ){
+		    m_pChannel->setTitle(e.text());
+		}
+		/*else if (e.tagName().toLower() == "link"){
+		    m_pChannel->setLink(e.text());
+		     PROBLEM :the channel link item in the XML file is different from the actual desired url
+		    example :  in xml  file
+		    <channel><title>The Code Project Latest Articles</title>
+			<link>http://www.codeproject.com</link>
+			but the XML url file we want to store and process is called: http://www.codeproject.com/webservices/articlerss.aspx?cat=2
+
+		    m_pChannel->setLink(m_p
+		}*/else if (e.tagName().toLower() == "description"){
+		    m_pChannel->setDesc(e.text());
+		}else if (e.tagName().toLower() == "language"){
+		    m_pChannel->setLang(e.text());
+		}
+	    }
+	  }//end while node not null
+	    return true;
+	}//end if item tagname is CHANNEL
+    }//end if elemnt is not null
+
+    //i think if we are here, that means the channel was not parsed
+    return false;
+}
 
 

@@ -18,13 +18,15 @@ class XmlParser : public QThread
 protected:
     void run();
 public:
-    XmlParser(QObject* parent);
+    //XmlParser(QObject* parent);
     //
     XmlParser(QString ,QObject* parent);
     virtual ~XmlParser();
     Channel& GetChannel();
     void ParseXML();
     void SetData(const QByteArray&);
+    //added on 18-7-09 to verify if the file is valid or not without storing values in internal members, used for verifying newly inserted links
+    bool IsValidRSSFile();
 
 signals:
     void SignalParseError(QString);
@@ -36,6 +38,8 @@ private:  //methods
     Item* ParseItem(QDomElement);
     bool ParseRssHead();
     bool ParseChannel();
+    //
+    bool IsValidChannel();
 
 
 private: //variables
@@ -43,6 +47,7 @@ private: //variables
     QDomElement*    m_pRootElement;
     QByteArray*     m_pData;
     Channel*        m_pChannel;
+    QString	    m_urlString;
 
 };
 
