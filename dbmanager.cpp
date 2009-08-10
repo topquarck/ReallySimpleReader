@@ -1,8 +1,10 @@
 #include "dbmanager.h"
-#include <QStringList>
 #include "dbconnector.h"
+#include "channel.h"
+#include <QStringList>
 #include <QSqlQuery>
 #include <QVariant>
+
 DBManager::DBManager()
 {
     //init member to NULL
@@ -67,8 +69,39 @@ QStringList DBManager::GetChannelsURLs()
     return channelsList;
 }
 
+/**
+  this method is used to insert a new feed URL to the db, used by insertFeed Dialog
+  it needs to check whether the url already exists before, if found, do nothing, else, write the new entry to the db
+  @param feedURL, a QString
+  @return true if the file inserted successfully, false otherwise
+  */
+bool DBManager::InsertNewCahnnel(Channel& givenChannel)
+{
+    qDebug("bool DBManager::InsertNewCahnnel(Channel& givenChannel)");
 
 
+    /* Not working, the params need the '' marks before them*/
+    //QString query = "insert into channel_table (channel_name,channel_link,channel_desc,channel_lang) values(:name,:link,:desc,:lang)";
+    QString query = "insert into channel_table (channel_name,channel_link,channel_desc) values(:name,:link,:desc)";
+    query = query.replace(QString(":name"),QString("'"+givenChannel.getTitle()+"'"));
+    query = query.replace(":link",QString("'"+givenChannel.getLink()+"'"));
+    query = query.replace(":desc",QString("'"+givenChannel.getDesc()+"'"));
+    //query = query.replace(":lang",givenChannel.getLang());
+
+    //qDebug("%s",query);
+
+    if (!m_pConnector)
+	m_pConnector =  new DBConnector(this);
+
+    return m_pConnector->InsertData(query);
+}
+bool DBManager::URLExistedBefore(QString givenFeedURL)
+{
+    if (!m_pConnector)
+	m_pConnector = new DBConnector(this);
+    qDebug("bool DBManager::URLExistedBefore(QString givenFeedURL)");
+    return m_pConnector->ExistedBefore(givenFeedURL);
+}
 
 
 

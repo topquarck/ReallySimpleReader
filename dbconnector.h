@@ -18,6 +18,8 @@ public:
     bool            IsOpen();
     bool            InsertData(QString);
     QSqlQuery&      RetreiveData(QString);
+    //
+    bool	    ExistedBefore(QString);
 
 signals:
     void ConnectionErrorSignal(QString);
