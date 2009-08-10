@@ -1,14 +1,14 @@
 #ifndef HTTPDOWNLOADER_H
 #define HTTPDOWNLOADER_H
 
-//#include <QThread>
 #include <QObject>
+#include "channel.h"
 class QUrl;
 class QHttp;
 class QBuffer;
 class QUrl;
 class XmlParser;
-#include "channel.h"
+
 
 /**
   this class uses the QHttp class to download the XML files from
@@ -30,6 +30,8 @@ public:
     void DownloadURL();
     void DownloadURL(QString);
     Channel& GetChannel();
+    //
+    bool IsValidRSSFile();
 
 public slots:
     void Done(bool);

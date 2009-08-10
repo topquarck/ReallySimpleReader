@@ -5,10 +5,12 @@
 #include <QFileInfo>
 #include <iostream>
 #include "xmlparser.h"
-//
+
 
 using namespace std;
+
 int HttpDownloader::m_globalfileCounter = 0;
+
 HttpDownloader::HttpDownloader(QObject *parent):QObject(parent)//QThread(parent)
 {
     m_pBuffer = NULL;
@@ -42,27 +44,25 @@ HttpDownloader::~HttpDownloader()
   */
 void HttpDownloader::CleanUp()
 {
+    qDebug("void HttpDownloader::CleanUp()");
     if (m_pHttp){
         delete m_pHttp;
-        m_pHttp = NULL;
+	//m_pHttp = NULL;
     }
     if (m_pUrl){
         delete m_pUrl;
-        m_pUrl = NULL;
+	// = NULL;
     }
     if (m_pBuffer){
         m_pBuffer->close();
         delete m_pBuffer;
-        m_pBuffer = NULL;
+	//m_pBuffer = NULL;
     }
     if (m_pParser){
         delete m_pParser;
-        m_pParser = NULL;
+	//m_pParser = NULL;
     }
-    /*if (m_pChannel){
-        delete m_pChannel;
-        m_pChannel = NULL;
-    }*/
+
 }
 
 /**
@@ -141,7 +141,7 @@ void HttpDownloader::Done(bool error) {
         // the code to parse the XML file
         if (m_pParser)
             delete m_pParser;
-        m_pParser = new XmlParser(this);
+	m_pParser = new XmlParser(m_strfileName,this);
         this->AddParserSignals();
         m_pParser->SetData(this->GetData());
         //delete m_pBuffer;
@@ -214,6 +214,16 @@ void HttpDownloader::ViewErrorMessge(QString error)
     std::cout<<"Download ERROR: "<<error.toStdString()<<endl;
 }
 
+bool HttpDownloader::IsValidRSSFile()
+{
+    if (m_pParser){
+	emit SignalDownloadDone();
+	return m_pParser->IsValidRSSFile();
+    }
+
+    //if parser is null , return false;
+    return false;
+}
 
 
 
