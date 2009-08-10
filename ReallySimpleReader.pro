@@ -16,12 +16,12 @@ SOURCES += rsrmainwindow.cpp \
     dbmanager.cpp \
     httpdownloader.cpp \
     xmlparser.cpp \
-    dbconnector.cpp \
     main.cpp \
     feedmodel.cpp \
     channellistmodel.cpp \
     dbconnector.cpp \
-    webpagewindow.cpp
+    webpagewindow.cpp \
+    addfeeddialog.cpp
 HEADERS += rsrmainwindow.h \
     item.h \
     channel.h \
@@ -29,11 +29,12 @@ HEADERS += rsrmainwindow.h \
     dbmanager.h \
     httpdownloader.h \
     xmlparser.h \
-    dbconnector.h \
     feedmodel.h \
     channellistmodel.h \
     dbconnector.h \
-    webpagewindow.h
+    webpagewindow.h \
+    addfeeddialog.h
 FORMS += rsrmainwindow.ui \
-    webpagewindow.ui
+    webpagewindow.ui \
+    addfeeddialog.ui
 OTHER_FILES += README.txt
