@@ -1,11 +1,12 @@
 #include "webpagewindow.h"
 #include "ui_webpagewindow.h"
 #include <QUrl>
-//
 #include <QProgressBar>
 #include <QLabel>
-//
 #include <QWebSettings>
+#include <QCloseEvent>
+//trying to disable history
+#include <QWebHistory>
 
 WebPageWindow::WebPageWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,13 +30,11 @@ WebPageWindow::WebPageWindow(QString givenUrl,QWidget *parent) :
 void WebPageWindow::Init()
 {
     ui->setupUi(this);
-    //
-    //setAttribute(Qt::WA_DeleteOnClose);
-    //
+
     this->CreateToolBarActions();
     this->SetupStatusBar();
     this->AddWebViewSignals();    
-    //
+
     LoadWebSettings();
 }
 void WebPageWindow::SetupStatusBar()
@@ -52,14 +51,16 @@ void WebPageWindow::SetupStatusBar()
 WebPageWindow::~WebPageWindow()
 {
     qDebug("in WebPageWindow DEstructor");
+    this->DeleteToolBarActions();
     if (m_pProgressBar)
 	delete m_pProgressBar;
     if (m_pStatusLabel)
 	delete m_pStatusLabel;
     if (m_pUrl)
         delete m_pUrl;
-    this->DeleteToolBarActions();
+
     delete ui;
+    qDebug("After finishing the destructor");
 }
 
 void WebPageWindow::changeEvent(QEvent *e)
@@ -98,6 +99,7 @@ void WebPageWindow::CreateToolBarActions()
 }
 void WebPageWindow::DeleteToolBarActions()
 {
+    qDebug("void WebPageWindow::DeleteToolBarActions()");
     if (m_pBackAction)
         delete m_pBackAction;
     if (m_pForwardAction)
@@ -105,7 +107,7 @@ void WebPageWindow::DeleteToolBarActions()
     if (m_pRealoadAction)
         delete m_pRealoadAction;
     if (m_pStopActoin)
-        delete m_pRealoadAction;
+        delete m_pStopActoin;
 }
 
 void WebPageWindow::LoadPage()
@@ -156,7 +158,7 @@ void WebPageWindow::HandleWebViewLoadFinished(bool ok)
     if (ok){
         m_pProgressBar->hide();
         m_pStatusLabel->clear();
-    }else{;
+    }else{
         m_pProgressBar->hide();
         m_pStatusLabel->setText("Error Loading "+m_pUrl->toString());
     }
@@ -169,7 +171,22 @@ void WebPageWindow::LoadWebSettings()
     m_pSettings->setAttribute(QWebSettings::JavaEnabled,false);
     m_pSettings->setAttribute(QWebSettings::JavascriptCanOpenWindows,false);
     m_pSettings->setAttribute(QWebSettings::PluginsEnabled,false);
+
+    m_pSettings->setAttribute(QWebSettings::PrivateBrowsingEnabled,true);
+
+    // try to disable cache
+    m_pSettings->setMaximumPagesInCache(0);
+    m_pSettings->setObjectCacheCapacities(0, 0, 0);
+    //trying to disable history
+    ui->m_webView->page()->history()->setMaximumItemCount(0);
 }
 
+// trying to send a signal to the main window to tell it that the window has been closed
+//so the main window deletes it
+void WebPageWindow::closeEvent ( QCloseEvent * event )
+{
+    emit WebWindowClosing(m_pUrl->toString());
+    event->accept();
+}
 
 

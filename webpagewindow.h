@@ -4,11 +4,10 @@
 #include <QtGui/QMainWindow>
 class QAction;
 class QUrl;
-//
 class QProgressBar;
 class QLabel;
-//
 class QWebSettings;
+class QCloseEvent;
 
 namespace Ui {
     class WebPageWindow;
@@ -26,6 +25,7 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
+    void closeEvent( QCloseEvent * event );
 
 private:    //methods
     void CreateToolBarActions();
@@ -33,12 +33,14 @@ private:    //methods
     void Init();
     void AddWebViewSignals();
     void SetupStatusBar();
-    //
     void LoadWebSettings();
 
 private slots:
     void HandleWebViewLoadStarted();
     void HandleWebViewLoadFinished(bool);
+
+signals:
+    void WebWindowClosing(QString);
 
 private:
     Ui::WebPageWindow       *ui;
@@ -47,10 +49,8 @@ private:
     QAction                 *m_pStopActoin;
     QAction                 *m_pRealoadAction;
     QUrl                    *m_pUrl;
-    //trying
     QProgressBar            *m_pProgressBar;
     QLabel                  *m_pStatusLabel;
-    //
     QWebSettings	    *m_pSettings;
 };
 
