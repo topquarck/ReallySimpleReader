@@ -12,10 +12,10 @@
 #include "webpagewindow.h"
 #include <QProgressBar>
 #include <QLabel>
-//
 #include "addfeeddialog.h"
-//
 #include <QHeaderView>
+//trying to disable history
+#include <QWebHistory>
 
 RSRMainWindow::RSRMainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::RSRMainWindow)
@@ -56,6 +56,9 @@ void RSRMainWindow::Init()
     m_pStatusLabel->setText("Loading Feeds List ... ");
     CreateReader();
     //this->GetFeeds();
+
+    //load the settings of the internal web browser
+    LoadWebSettings();
 }
 void RSRMainWindow::CreateReader()
 {
@@ -212,10 +215,7 @@ void RSRMainWindow::HandleItemsViewSelection(QModelIndex index)
          return ;
     //else
     QString url = m_pFeedModel->GetLink(index.row());
-    //
-    ui->m_webView->settings()->setAttribute(QWebSettings::AutoLoadImages,false); //dont know why it doesnt work
-    ui->m_webView->settings()->setAttribute(QWebSettings::JavascriptEnabled,false);
-    //
+
     ui->m_webView->load(QUrl(url));
 
 }
@@ -246,6 +246,10 @@ void RSRMainWindow::HandleChannelsViewSelection(QModelIndex index)
 
 }
 
+/**
+  this SLOT is called when the user double-clicks a news item from the items view
+  it is supposed to show him a new window that contains the detailed news item's page
+  */
 void RSRMainWindow::HandleDoubleClicked(QModelIndex index)
 {
     if (!index.isValid() || index.row() >= m_pFeedModel->rowCount())
@@ -253,31 +257,21 @@ void RSRMainWindow::HandleDoubleClicked(QModelIndex index)
     //else
     QString url = m_pFeedModel->GetLink(index.row());
 
-    /**************8888 NEED REFACTORING
-      a very disgusting solution, But it works !!
-      the problem: open a window, close it  and then open it again --> will not open
-      because the url entry correspondind to it still exists in the hashTable, BUT whent it closed it didnt inform
-      the hashtable to delete it : cant find a method to notfiy hashtable with the death of the window
-
-       the disgusstin solution : if the url already exists in the hashtable : close the window - even it was already dead-
-       and remove tje entry, then treat it as a new entry (delete it and recreate it )
-      **********************/
+    //if the url already opnen in a window
     if (m_webWindowsHash.contains(url)){
-        //just view it
-	//m_webWindowsHash.value(url)->raise();
-	m_webWindowsHash.value(url)->close();
-	m_webWindowsHash.remove(url);
+        //just raise it to the user
+        m_webWindowsHash.value(url)->raise();
     }
-    //else{
+    else{
         //else , the url is new,
-        //create a window and insert it into the hash
+        //create a window, view it to the user
         WebPageWindow* window = new WebPageWindow(this);
-        //window->setObjectName(url);
-	//connect(window,SIGNAL(destroyed(QObject*)),this,SLOT(HandleDestroyedWindow(QObject*)) );
+        connect(window,SIGNAL(WebWindowClosing(QString)),this,SLOT(HandleWebWindowClosed(QString)));
         window->LoadPage(url);
         window->show();
+        //and add a refernce to it in the Open windows Hash
         m_webWindowsHash.insert(url,window);
-    //}
+    }
 }
 
 /**
@@ -303,3 +297,43 @@ void RSRMainWindow::AddNewFeed()
     AddFeedDialog* dialog = new AddFeedDialog(this);
     dialog->show();
 }
+
+/**
+  this SLOT is called when an open child news page is closed, it - the child window - emits a signal called
+  WebWindowClosing(QString the_window_url) before it dies.
+  this method locates its reference in the open windows Hash table deletes it - removes the table entry AND DELETES
+  the child window < calls its destructor>.
+  @param url the url of the web , used as the key to locate the window object in the hash table
+  */
+void RSRMainWindow::HandleWebWindowClosed(QString url)
+{
+    if (m_webWindowsHash.contains(url)){
+        // remove the object : the take() method gets the value from the table AND REMOVES ITS ENTRY
+        WebPageWindow* ptr = m_webWindowsHash.take(url);
+        //delete the window object
+        delete ptr;
+    }
+}
+
+/**
+  a separate method to add some settings to the internal web viewer ui->m_webView,
+  the aim of that is to try to minimize the memory usage made by QWebView Component and making the app as lightweight as possible:
+  in the internal view : will not load images, will disable both javascript and java, will try to eliminate history and enable private browsing
+  */
+void RSRMainWindow::LoadWebSettings()
+{
+    ui->m_webView->settings()->setAttribute(QWebSettings::AutoLoadImages,false); //dont know why it doesnt work
+    ui->m_webView->settings()->setAttribute(QWebSettings::JavascriptEnabled,false);
+    ui->m_webView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,false);
+    ui->m_webView->settings()->setAttribute(QWebSettings::JavaEnabled,false);
+    ui->m_webView->settings()->setAttribute(QWebSettings::PluginsEnabled,false);
+    ui->m_webView->settings()->setAttribute(QWebSettings::PrivateBrowsingEnabled,true);
+
+    // try to disable cache
+    ui->m_webView->settings()->setMaximumPagesInCache(0);
+    ui->m_webView->settings()->setObjectCacheCapacities(0, 0, 0);
+    //trying to disable history
+    ui->m_webView->page()->history()->setMaximumItemCount(0);
+
+}
+

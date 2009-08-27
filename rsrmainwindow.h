@@ -2,17 +2,14 @@
 #define RSRMAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QModelIndex>
+#include <QHash>
 
 class QAction;
 class ReallySimpleReader;
-//testing
 class FeedModel ;
-#include <QModelIndex>
 class ChannelListModel;
 class WebPageWindow;
-#include <QHash>;
-//
-#include <QPointer>;
 //to add progress bar to the statusbar
 class QProgressBar;
 class QLabel;
@@ -21,7 +18,9 @@ namespace Ui
 {
     class RSRMainWindow;
 }
-
+/**
+  The main Class of the Application : the main UI that controls the intire App classes
+  */
 class RSRMainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -43,6 +42,7 @@ private slots:
     void HandleWebViewLoadFinished(bool);
     void HandleChannelFetchStarted();
     void HandleDoubleClicked(QModelIndex);
+    void HandleWebWindowClosed(QString);
 
 private:    //methods
     void CreateToolBar();
@@ -54,6 +54,7 @@ private:    //methods
     void CreateReader();
     //to add the progressbar to the statusBar
     void SetupStatusBar();
+    void LoadWebSettings();
 
 private:
     Ui::RSRMainWindow              *ui;
