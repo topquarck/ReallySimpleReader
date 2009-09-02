@@ -132,15 +132,17 @@ bool DBConnector::ExistedBefore(QString givenUrl)
     m_pQuery = new QSqlQuery(*m_pDatabase);
 
     m_pQuery->prepare("select channel_id from channel_table where channel_link= :url");
-    m_pQuery->bindValue(":url",QVariant(givenUrl));
+    m_pQuery->bindValue(":url",givenUrl);
 
     if (! m_pQuery->exec()){
 	//report error
 	emit QueryErrorSignal(m_pQuery->lastError().text());
 	return false;
-    }else{  // the query executed
-	if ( m_pQuery->isActive() && m_pQuery->isValid() && m_pQuery->next())   // if the query has a result
-	    return true;
+    }
+    else{  // the query executed
+        if ( m_pQuery->isActive() && m_pQuery->next() )  // dont know why isValid() returns false
+                return true;
+
 	else{
 	return false;
 	}
