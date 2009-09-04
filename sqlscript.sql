@@ -16,7 +16,7 @@ BEGIN TRANSACTION;
 create table channel_table (
 	channel_id integer primary key AUTOINCREMENT,
 	channel_name varchar(100),
-	channel_link varchar(200) not null,
+	channel_link varchar(200) not null unique,
 	channel_desc varchar(4000),
 	channel_lang varchar(10)
 	);
