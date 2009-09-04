@@ -55,6 +55,10 @@ void ReallySimpleReader::GetFeeds()
                 m_downloadersList.size() );
 
     }//end if channels list not empty
+    else{
+        //else; there is no data in the DB : just emit the finished signal with zero channels fetched
+        emit SignalAllChannelsFetched();
+    }
     delete m_pDbManager;
     m_pDbManager = NULL;
 

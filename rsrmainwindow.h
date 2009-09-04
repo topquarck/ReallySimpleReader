@@ -55,6 +55,8 @@ private:    //methods
     //to add the progressbar to the statusBar
     void SetupStatusBar();
     void LoadWebSettings();
+    void EnableToolBarActions();
+    void DisableToolBarActions();
 
 private:
     Ui::RSRMainWindow              *ui;

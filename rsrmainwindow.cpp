@@ -169,26 +169,27 @@ void RSRMainWindow::AddModelsSignals()
 void RSRMainWindow::HandleChannelFetchStarted()
 {
     qDebug("void RSRMainWindow::HandleChannelFetchStarted()");
-    m_pGetFeedsAction->setEnabled(false);
-    ui->actionFetchAllFeeds->setEnabled(false);
+    DisableToolBarActions();
 }
 void RSRMainWindow::HandleFetchedCahnnels()
 {
     qDebug("in Windows HandleFetchedCahnnels, which invoked after emitting the all channels signal");
-    //7-7-09 :will now re-enable the toolbar action and the menu item
-    m_pGetFeedsAction->setEnabled(true);
-    ui->actionFetchAllFeeds->setEnabled(true);
+    //7-7-09 :will now re-enable the toolbar action and the menu item -- UPDATE : made it into a method
+    EnableToolBarActions();
     //end 7-7
     m_pStatusLabel->clear();
 
-    m_pChannelsModel = new ChannelListModel();
-    m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());
-    qDebug("after calling : m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());");
-    ui->m_listView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->m_listView->setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(ui->m_listView,SIGNAL(clicked(QModelIndex)),
-            this,SLOT(HandleChannelsViewSelection(QModelIndex) ) );
-    ui->m_listView->setModel(m_pChannelsModel);
+    //added 04-09-09: if statement to handle if the DB has no records --> no data is sent So, no need to create a model and fill it with nothing
+    if (m_pReader->GetChannelsList().size()>0){
+        m_pChannelsModel = new ChannelListModel();
+        m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());
+        qDebug("after calling : m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());");
+        ui->m_listView->setSelectionBehavior(QAbstractItemView::SelectRows);
+        ui->m_listView->setSelectionMode(QAbstractItemView::SingleSelection);
+        connect(ui->m_listView,SIGNAL(clicked(QModelIndex)),
+                this,SLOT(HandleChannelsViewSelection(QModelIndex) ) );
+        ui->m_listView->setModel(m_pChannelsModel);
+    }
 }
 void RSRMainWindow::HandleDownLoadFinished()
 {
@@ -337,3 +338,13 @@ void RSRMainWindow::LoadWebSettings()
 
 }
 
+void RSRMainWindow::EnableToolBarActions()
+{
+    m_pGetFeedsAction->setEnabled(true);
+    ui->actionFetchAllFeeds->setEnabled(true);
+}
+void RSRMainWindow::DisableToolBarActions()
+{
+    m_pGetFeedsAction->setEnabled(false);
+    ui->actionFetchAllFeeds->setEnabled(false);
+}
