@@ -23,3 +23,5 @@ pushScript.sh
 ## 7. the Make file ; it changes every time you recompile the App
 Makefile*
 
+## the PHYSICAL DB file : no need to change the .sqlite files with my local data
+*.sqlite
