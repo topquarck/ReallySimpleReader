@@ -27,7 +27,12 @@ public:
     bool URLExistedBefore(QString);
 
 private:
-    void CleanUp();    
+    void CleanUp();
+    void AddDBConnectorSignals();
+
+signals:
+    void DBMConnectionErrorSignal(QString);
+    void DBMQueryErrorSignal(QString);
 
 private:
     /*Channel*        m_pChannel;

@@ -36,7 +36,7 @@ void DBManager::CleanUp()
     }*/
     if (m_pConnector){
         delete m_pConnector;
-        m_pConnector = NULL;
+        //m_pConnector = NULL;
     }
 }
 /**
@@ -52,6 +52,7 @@ QStringList DBManager::GetChannelsURLs()
     QStringList channelsList;
     if (! m_pConnector){
         m_pConnector = new DBConnector(this);
+        AddDBConnectorSignals();
     }
     QString channelsURLsQuery = "select channel_link from channel_table";
     QSqlQuery result = m_pConnector->RetreiveData(channelsURLsQuery);
@@ -103,6 +104,17 @@ bool DBManager::URLExistedBefore(QString givenFeedURL)
     return m_pConnector->ExistedBefore(givenFeedURL);
 }
 
+/**
+  a method to connect the error signals related to db to the manager
+ */
+void DBManager::AddDBConnectorSignals()
+{
+    connect(m_pConnector,SIGNAL(ConnectionErrorSignal(QString)),
+            this,SIGNAL(DBMConnectionErrorSignal(QString)) );
+
+    connect(m_pConnector,SIGNAL(QueryErrorSignal(QString)),
+            this,SIGNAL(DBMQueryErrorSignal(QString)) );
+}
 
 
 
