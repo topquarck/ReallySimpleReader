@@ -126,7 +126,9 @@ bool XmlParser::OpenBuffer()
 
     m_pDoc = new QDomDocument();
     //if the Buffer contents not loaded to mem
-    if (m_pData->isNull()){qDebug("the data array is null!!");}
+    if (m_pData->isNull()){
+        qDebug("the data array is null!!");
+    }
     if( !m_pDoc->setContent( *m_pData) ){
         //reportError
         emit SignalParseError(QString("ERROR: Couldn't load the data into DOM"));

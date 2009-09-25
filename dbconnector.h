@@ -28,6 +28,7 @@ signals:
 private:
     void            CleanUp();
     bool            OpenConnection();
+    void            Commit();
 
 private: // variables
     QSqlDatabase*   m_pDatabase;
