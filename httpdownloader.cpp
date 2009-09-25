@@ -16,7 +16,6 @@ HttpDownloader::HttpDownloader(QObject *parent):QObject(parent)//QThread(parent)
     m_pBuffer = NULL;
     m_pHttp = NULL;
     m_pUrl = NULL;
-    //
     m_pParser = NULL;
     m_pChannel = NULL;
 }
@@ -26,7 +25,6 @@ HttpDownloader::HttpDownloader(QString givenFilename,QObject *parent):QObject(pa
     m_pHttp = NULL;
     m_pUrl = NULL;
     m_strfileName = givenFilename;
-    //
     m_pParser = NULL;
     m_pChannel = NULL;
 }
@@ -77,7 +75,7 @@ void HttpDownloader::DownloadURL()
         this->AddQhttpSignals();
         m_pHttp->setHost(m_pUrl->host(), m_pUrl->port(80));
         m_pHttp->get(m_pUrl->path(), m_pBuffer);
-        m_pHttp->close();
+        //m_pHttp->close();
     }
     else{
         //TODO: handle the error

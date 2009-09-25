@@ -16,6 +16,7 @@
 #include <QHeaderView>
 //trying to disable history
 #include <QWebHistory>
+#include <QDebug>
 
 RSRMainWindow::RSRMainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::RSRMainWindow)
@@ -53,8 +54,6 @@ void RSRMainWindow::Init()
     m_pReader = NULL;
     //
     //get initial data from the DB
-    m_pStatusLabel->setText("Loading Feeds List ... ");
-    CreateReader();
     //this->GetFeeds();
 
     //load the settings of the internal web browser
@@ -63,8 +62,12 @@ void RSRMainWindow::Init()
 void RSRMainWindow::CreateReader()
 {
     qDebug("void RSRMainWindow::CreateReader()");
+
     m_pReader = new ReallySimpleReader(this);
-    this->AddModelsSignals();
+
+    AddModelsSignals();
+        //add db signals
+    AddDBSignals();
 }
 void RSRMainWindow::CreateToolBar()
 {
@@ -142,23 +145,20 @@ void RSRMainWindow::RestoreDefaultWindowState()
 void RSRMainWindow::GetFeeds()
 {
     qDebug("void RSRMainWindow::GetFeeds()");
-    if (m_pReader)
-	delete m_pReader;
 
+    if (m_pReader) {
+        // must delete existing reader for each time user presses the GET FEEDs  button in order to prevent
+        // duplicate entries from the list. NEED TO FIND A SOLUTION FOR THAT
+        delete m_pReader;
+    }
     CreateReader();
     ui->m_listView->reset();
     ui->m_tableView->reset();
+    m_pStatusLabel->setText("Loading Feeds List ... ");
     m_pReader->GetFeeds();
 }
 void RSRMainWindow::AddModelsSignals()
 {
-    /*connect(m_pReader,SIGNAL(Finished()),
-            this,SLOT(HandleDownLoadFinished()) );
-    connect(m_pReader,SLOT(SignalDownloadProgress(int,int)),
-             this,SLOT(HandleDownloadProgress(int,int)) );
-    connect(m_pReader,SIGNAL(SignalDownloadError(QString)),
-            this,SLOT(HandleDownloadErrors(QString)) );*/
-
     connect(m_pReader,SIGNAL(SignalAllChannelsFetched()),
             this,SLOT(HandleFetchedCahnnels()) );
     connect(m_pReader,SIGNAL(SignalChannelFetchStarted()),this,SLOT(HandleChannelFetchStarted()));
@@ -177,10 +177,11 @@ void RSRMainWindow::HandleFetchedCahnnels()
     //7-7-09 :will now re-enable the toolbar action and the menu item -- UPDATE : made it into a method
     EnableToolBarActions();
     //end 7-7
-    m_pStatusLabel->clear();
+
 
     //added 04-09-09: if statement to handle if the DB has no records --> no data is sent So, no need to create a model and fill it with nothing
     if (m_pReader->GetChannelsList().size()>0){
+        m_pStatusLabel->clear();
         m_pChannelsModel = new ChannelListModel();
         m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());
         qDebug("after calling : m_pChannelsModel->SetChannelsList(m_pReader->GetChannelsList());");
@@ -191,25 +192,7 @@ void RSRMainWindow::HandleFetchedCahnnels()
         ui->m_listView->setModel(m_pChannelsModel);
     }
 }
-void RSRMainWindow::HandleDownLoadFinished()
-{
-   qDebug("in Fill view , Window");
-    /*QDirModel *model = new QDirModel;
-    ui->m_feedListView->setModel(model);
-    ui->m_feedListView->setRootIndex(model->index(QDir::currentPath()));
-    */
-    /*FeedModel* */ /* m_pFeedModel = new FeedModel();
-    //
-    ui->m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->m_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(ui->m_tableView,SIGNAL(clicked(QModelIndex)),
-             this,SLOT(HandleItemsViewSelection(QModelIndex) ) );
-    m_pFeedModel->setItemsList(m_pReader->GetItemsList());
-    ui->m_tableView->setModel(m_pFeedModel);
-    //ui->m_tableView->resizeColumnsToContents();
-    ui->m_tableView->show();*/
 
-}
 void RSRMainWindow::HandleItemsViewSelection(QModelIndex index)
 {
     if (!index.isValid() || index.row() >= m_pFeedModel->rowCount())
@@ -257,6 +240,9 @@ void RSRMainWindow::HandleDoubleClicked(QModelIndex index)
          return ;
     //else
     QString url = m_pFeedModel->GetLink(index.row());
+
+    //stop loading the page because it sill load in a new separate window : DONT KNOW WHY IT DOESNT WORK !!
+    ui->m_webView->stop();
 
     //if the url already opnen in a window
     if (m_webWindowsHash.contains(url)){
@@ -348,3 +334,33 @@ void RSRMainWindow::DisableToolBarActions()
     m_pGetFeedsAction->setEnabled(false);
     ui->actionFetchAllFeeds->setEnabled(false);
 }
+
+void RSRMainWindow::AddDBSignals()
+{
+    connect (m_pReader,SIGNAL(SignalDBConnectionError(QString)),
+             this,SLOT(HandleDBConnectionError(QString)) );
+
+    connect (m_pReader,SIGNAL(SignalDBQueryError(QString)),
+             this,SLOT(HandleDBQueryError(QString)) );
+}
+
+/**
+  print the DBManager's error to the statusbar
+  */
+void RSRMainWindow::HandleDBConnectionError(QString error)
+{
+    m_pStatusLabel->setText(error);
+    EnableToolBarActions();
+}
+
+void RSRMainWindow::HandleDBQueryError(QString error)
+{
+    qDebug("RSRMainWindow::HandleDBQueryError(QString error)\n the error is:");
+    qDebug()<<error;
+    m_pStatusLabel->setText("DB ERROR: Unable to fetch data from DB");
+    EnableToolBarActions();
+}
+
+
+
+

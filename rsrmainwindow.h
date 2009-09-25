@@ -33,7 +33,6 @@ public slots:
     void AddNewFeed();
 
 private slots:
-    void HandleDownLoadFinished();
     void HandleItemsViewSelection(QModelIndex index);
     //the following slots for the viewing of the channel names in the left listview
     void HandleFetchedCahnnels();
@@ -43,6 +42,9 @@ private slots:
     void HandleChannelFetchStarted();
     void HandleDoubleClicked(QModelIndex);
     void HandleWebWindowClosed(QString);
+    //DBManager's signals print the error string to the statusbar, added 25-9-09
+    void HandleDBConnectionError(QString);
+    void HandleDBQueryError(QString);
 
 private:    //methods
     void CreateToolBar();
@@ -57,6 +59,8 @@ private:    //methods
     void LoadWebSettings();
     void EnableToolBarActions();
     void DisableToolBarActions();
+    // to handle DB errors
+    void AddDBSignals();
 
 private:
     Ui::RSRMainWindow              *ui;
