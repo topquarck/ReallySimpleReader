@@ -5,7 +5,6 @@
 class HttpDownloader;
 class DBManager;
 
-
 namespace Ui {
     class AddFeedDialog;
 }
@@ -21,13 +20,21 @@ protected:
 
 private:
     void Init();
-    void AddSignals();
+    void AddUISignals();
     bool IsValidFeedURL();
     bool IsValidChannel();
+    void EnableUIControls();
+    void DisableUIControls();
+    void AddDBManagerSignals();
+    void AddDownloaderSignals();
+    void SetFeedURLValidator();
 
 private slots:
     void HandleAddFeed();
     void RetreiveChannel();
+    void HandleDownloadError(QString);
+    void HandleDBManagerConnectionError(QString);
+    void HandleDBManagerQueryError(QString);
 
 private:
     Ui::AddFeedDialog	    *m_ui;
