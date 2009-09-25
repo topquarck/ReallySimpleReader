@@ -1,20 +1,13 @@
 #include "reallysimplereader.h"
 #include "dbmanager.h"
-//#include "xmlparser.h"
 #include "httpdownloader.h"
-//#include "rsrmainwindow.h"
 #include "channel.h"
-
 #include <QStringList>
 #include <QList>
+
 ReallySimpleReader::ReallySimpleReader(QObject *parent):QObject(parent)
 {
-    //m_pHttpDownloader = NULL;
-    //m_pXmlParser = NULL;
-    //to add the RSS URL storing functionality
-    //m_pStore = NULL;
     m_channelHitCounter = 0 ;
-    //
     m_pDbManager = NULL;
 }
 ReallySimpleReader::~ReallySimpleReader()
@@ -29,19 +22,28 @@ ReallySimpleReader::~ReallySimpleReader()
 	    delete d;
 	}
     }
+    //!!
+    if(!m_channelsList.isEmpty())
+        m_channelsList.clear();
+    if (!m_urlList.isEmpty())
+        m_urlList.clear();
 }
 
 void ReallySimpleReader::GetFeeds()
 {
     qDebug("in Get feeds at RSR.cpp");
     emit SignalChannelFetchStarted();
+    if (m_pDbManager)
+        delete m_pDbManager;
+
     m_pDbManager = new DBManager(this);
+    AddDBManagerSignals();
     m_urlList = m_pDbManager->GetChannelsURLs();
 
 
     if (!m_urlList.isEmpty()){
         //now, create n parsers each one of them downloads and parses a single URL from the urlList
-        HttpDownloader* tempDownloader = NULL;
+        HttpDownloader* tempDownloader;
 
         for (int i=0;i<m_urlList.size();i++){
             tempDownloader = new HttpDownloader(m_urlList.at(i),this);
@@ -106,8 +108,18 @@ QList<Channel> ReallySimpleReader::GetChannelsList()
 }
 
 
+/**
+  connect to DBManager's signals
+  */
+void ReallySimpleReader::AddDBManagerSignals()
+{
+    /*connect(m_pDbManager,SIGNAL(DBMConnectionErrorSignal(QString)),
+            this,SIGNAL(SignalDBConnectionError(QString)) );
+    */
+    connect (m_pDbManager,SIGNAL(DBMQueryErrorSignal(QString)),
+             this,SIGNAL(SignalDBQueryError(QString)) );
 
-
+}
 
 
 

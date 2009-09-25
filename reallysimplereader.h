@@ -29,10 +29,16 @@ public:
 public slots:
     void RetreiveChannels();
 
+private:
+    void AddDBManagerSignals();
+
 signals:
-    //void Finished();
     void SignalAllChannelsFetched();
     void SignalChannelFetchStarted();
+    void SignalDBConnectionError(QString);
+    void SignalDBQueryError(QString) ;
+
+
 private:
     QList<HttpDownloader*>	m_downloadersList;
     QStringList			m_urlList;
